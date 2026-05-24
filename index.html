@@ -558,7 +558,7 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
   background: var(--neutral-900);
   color: var(--neutral-0);
   border-radius: 20px;
-  padding: 28px 28px 26px;
+  padding: 26px 28px 28px;
   position: relative;
   overflow: hidden;
 }
@@ -577,24 +577,27 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--bring-mint);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 .result-hero .big {
   font-family: var(--font-display);
   font-weight: 500;
-  font-size: 50px;
-  line-height: 1.02;
-  letter-spacing: -0.025em;
+  font-size: 44px;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: 10px;
-  margin-bottom: 6px;
+  gap: 4px 12px;
+  margin-bottom: 10px;
 }
 .result-hero .big .unit {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
   color: var(--neutral-300);
-  letter-spacing: -0.005em;
+  letter-spacing: 0;
+  white-space: nowrap;
 }
 .result-hero .sub {
   font-size: 13px;
