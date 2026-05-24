@@ -1,0 +1,1992 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<title>Priskalkulator – Elektrisk varebil</title>
+<meta name="viewport" content="width=1280">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap">
+<style>
+/* =========================================================================
+ * Design tokens — Posten Bring
+ * ========================================================================= */
+:root {
+  --posten-red:       #E32D22;
+  --posten-red-deep:  #B5251C;
+  --posten-burgundy:  #4A1011;
+  --posten-pink:      #FFB5AF;
+
+  --bring-green:      #56B529;
+  --bring-green-deep: #00643A;
+  --bring-mint:       #B5E099;
+
+  --neutral-0:    #FFFFFF;
+  --neutral-50:   #FAFAFA;
+  --neutral-100:  #F4F4F2;
+  --neutral-200:  #ECEAE5;
+  --neutral-300:  #D9D6D0;
+  --neutral-400:  #B8B5AE;
+  --neutral-500:  #8A8780;
+  --neutral-600:  #6E6E6E;
+  --neutral-700:  #4A4A48;
+  --neutral-800:  #2A2A28;
+  --neutral-900:  #111110;
+
+  --focus-ring: #1B5DEF;
+  --status-error: #C7261B;
+
+  --font-sans: "Posten Sans", "DM Sans", -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Posten Sans Medium", "Posten Sans", "DM Sans", -apple-system, sans-serif;
+
+  --brand: var(--bring-green-deep);
+  --brand-bright: var(--bring-green);
+  --brand-soft: #E5F1E9;
+  --headline: var(--posten-burgundy);
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--neutral-100);
+  color: var(--neutral-900);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body { min-width: 1180px; }
+
+/* =========================================================================
+ * Header
+ * ========================================================================= */
+.brand-gradient {
+  height: 6px;
+  background: linear-gradient(90deg, #E32D22 0%, #FFFFFF 50%, #56B529 100%);
+}
+header.app-header {
+  background: var(--neutral-0);
+  border-bottom: 1px solid var(--neutral-300);
+}
+.header-inner {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 22px 48px 24px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+}
+.brand-mark {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  letter-spacing: -0.01em;
+}
+.brand-mark .roundel {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background:
+    linear-gradient(180deg, var(--neutral-700) 0% 50%, var(--posten-red) 50% 100%);
+  position: relative;
+  flex: none;
+}
+.brand-mark .wordmark {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 19px;
+  color: var(--neutral-900);
+  letter-spacing: -0.01em;
+}
+.brand-mark .wordmark span {
+  color: var(--neutral-600);
+  font-weight: 500;
+}
+.header-title h1 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 36px;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  color: var(--headline);
+  margin: 0 0 6px;
+}
+.header-title p {
+  margin: 0;
+  font-size: 15px;
+  color: var(--neutral-700);
+  max-width: 560px;
+  line-height: 1.45;
+}
+.header-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  padding-bottom: 4px;
+}
+.header-actions .row { display: flex; gap: 8px; }
+.meta-date {
+  font-size: 12px;
+  color: var(--neutral-500);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.btn {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 14px;
+  border-radius: 12px;
+  padding: 10px 16px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 160ms ease-out, transform 120ms ease-out, color 160ms ease-out, border-color 160ms ease-out;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--neutral-900);
+  color: var(--neutral-0);
+}
+.btn-primary:hover { background: var(--neutral-800); }
+.btn-primary:active { transform: scale(0.98); }
+.btn-ghost {
+  background: transparent;
+  color: var(--neutral-900);
+  border: 1.5px solid var(--neutral-300);
+}
+.btn-ghost:hover { background: var(--neutral-900); color: var(--neutral-0); border-color: var(--neutral-900); }
+.btn-danger {
+  background: transparent;
+  color: var(--posten-red-deep);
+  border: 1.5px solid var(--neutral-300);
+}
+.btn-danger:hover { background: var(--posten-red-deep); color: var(--neutral-0); border-color: var(--posten-red-deep); }
+.btn .icn { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+/* =========================================================================
+ * Layout
+ * ========================================================================= */
+main {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 36px 48px 80px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 420px;
+  gap: 32px;
+  align-items: start;
+}
+
+/* =========================================================================
+ * Inputs — sections
+ * ========================================================================= */
+.sections {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.section {
+  background: var(--neutral-0);
+  border: 1px solid var(--neutral-300);
+  border-radius: 16px;
+  padding: 22px 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.section--wide { grid-column: 1 / -1; }
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--neutral-200);
+}
+.section-num {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--brand);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 18px;
+  color: var(--neutral-900);
+  margin: 0;
+  letter-spacing: -0.005em;
+}
+.section-hint {
+  font-size: 12px;
+  color: var(--neutral-500);
+  margin: 0;
+  line-height: 1.45;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 18px;
+}
+.field-grid--full { grid-template-columns: 1fr; }
+.field-grid--3 { grid-template-columns: 1fr 1fr 1fr; }
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.field label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--neutral-700);
+  line-height: 1.4;
+}
+.field .sub {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--neutral-500);
+}
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+}
+.input-wrap input,
+.input-wrap select {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--neutral-900);
+  background: var(--neutral-0);
+  border: 1.5px solid var(--neutral-300);
+  border-radius: 10px;
+  padding: 11px 14px;
+  width: 100%;
+  transition: border-color 120ms ease-out, box-shadow 120ms ease-out;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.input-wrap.has-suffix input { padding-right: 56px; }
+.input-wrap input:focus,
+.input-wrap select:focus {
+  outline: none;
+  border-color: var(--neutral-900);
+  box-shadow: 0 0 0 3px rgba(27, 93, 239, 0.18);
+}
+.input-wrap input::placeholder { color: var(--neutral-400); font-weight: 400; }
+.input-suffix {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--neutral-500);
+  pointer-events: none;
+  letter-spacing: -0.005em;
+}
+.input-wrap select {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236E6E6E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 38px;
+}
+
+.note {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--neutral-600);
+  background: var(--neutral-100);
+  border-left: 2px solid var(--brand);
+  padding: 10px 12px;
+  border-radius: 0 8px 8px 0;
+}
+.note strong { color: var(--neutral-900); font-weight: 600; }
+
+/* =========================================================================
+ * Custom cost rows
+ * ========================================================================= */
+.custom-costs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+.custom-row {
+  display: grid;
+  grid-template-columns: 1fr 140px 34px;
+  gap: 8px;
+  align-items: center;
+}
+.custom-row input {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--neutral-900);
+  background: var(--neutral-0);
+  border: 1.5px solid var(--neutral-300);
+  border-radius: 10px;
+  padding: 9px 12px;
+  width: 100%;
+}
+.custom-row input:focus {
+  outline: none;
+  border-color: var(--neutral-900);
+  box-shadow: 0 0 0 3px rgba(27, 93, 239, 0.18);
+}
+.custom-row .amount-wrap {
+  position: relative;
+}
+.custom-row .amount-wrap input { padding-right: 48px; }
+.custom-row .amount-wrap .suf {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: var(--neutral-500);
+  font-weight: 500;
+  pointer-events: none;
+}
+.btn-del {
+  width: 34px;
+  height: 36px;
+  background: transparent;
+  border: 1.5px solid var(--neutral-300);
+  border-radius: 10px;
+  color: var(--neutral-600);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 120ms ease-out;
+}
+.btn-del:hover {
+  background: var(--posten-red-deep);
+  border-color: var(--posten-red-deep);
+  color: var(--neutral-0);
+}
+.btn-del svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
+
+.btn-add {
+  align-self: flex-start;
+  background: transparent;
+  border: 1.5px dashed var(--neutral-300);
+  color: var(--neutral-700);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 9px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 120ms ease-out;
+}
+.btn-add:hover {
+  border-color: var(--brand);
+  color: var(--brand);
+  background: var(--brand-soft);
+}
+
+.subtotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 12px 14px;
+  background: var(--neutral-100);
+  border-radius: 10px;
+  font-size: 13px;
+  margin-top: 4px;
+}
+.subtotal .lbl { color: var(--neutral-700); font-weight: 500; }
+.subtotal .val { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--neutral-900); font-size: 15px; }
+
+/* =========================================================================
+ * Slider
+ * ========================================================================= */
+.slider-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.slider-row .top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.slider-row .top .label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--neutral-700);
+}
+.slider-row .top .display {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--neutral-900);
+  font-variant-numeric: tabular-nums;
+}
+.slider-row .top .display .pct { color: var(--brand); font-size: 15px; margin-right: 6px; }
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 8px;
+  background: var(--neutral-200);
+  border-radius: 4px;
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--brand);
+  border: 3px solid var(--neutral-0);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  cursor: pointer;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--brand);
+  border: 3px solid var(--neutral-0);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  cursor: pointer;
+}
+.cap-breakdown {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 6px;
+}
+.cap-tile {
+  background: var(--neutral-100);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.cap-tile .l { font-size: 11px; color: var(--neutral-600); margin-bottom: 4px; }
+.cap-tile .v { font-size: 14px; font-weight: 600; color: var(--neutral-900); font-variant-numeric: tabular-nums; }
+.cap-tile.in .v { color: var(--brand); }
+.cap-tile.out .v { color: var(--neutral-500); }
+
+/* =========================================================================
+ * Weekday checkboxes
+ * ========================================================================= */
+.weekdays {
+  display: flex;
+  gap: 6px;
+}
+.weekday {
+  flex: 1;
+  position: relative;
+}
+.weekday input {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  margin: 0;
+}
+.weekday label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--neutral-0);
+  border: 1.5px solid var(--neutral-300);
+  border-radius: 10px;
+  padding: 10px 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--neutral-700);
+  cursor: pointer;
+  transition: all 120ms ease-out;
+  user-select: none;
+}
+.weekday input:checked + label {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--neutral-0);
+}
+.weekday input:focus-visible + label {
+  box-shadow: 0 0 0 3px rgba(27, 93, 239, 0.25);
+}
+
+/* =========================================================================
+ * Driver live stats
+ * ========================================================================= */
+.driver-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 4px;
+}
+.driver-stat {
+  background: var(--neutral-100);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.driver-stat .l { font-size: 11px; color: var(--neutral-600); margin-bottom: 3px; line-height: 1.3; }
+.driver-stat .v { font-size: 14px; font-weight: 600; color: var(--neutral-900); font-variant-numeric: tabular-nums; }
+
+/* =========================================================================
+ * Results panel
+ * ========================================================================= */
+aside.results {
+  position: sticky;
+  top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+}
+aside.results::-webkit-scrollbar { width: 6px; }
+aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-radius: 3px; }
+
+.result-hero {
+  background: var(--neutral-900);
+  color: var(--neutral-0);
+  border-radius: 20px;
+  padding: 28px 28px 26px;
+  position: relative;
+  overflow: hidden;
+}
+.result-hero::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #E32D22 0%, #FFFFFF 50%, #56B529 100%);
+}
+.result-hero .eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bring-mint);
+  margin-bottom: 10px;
+}
+.result-hero .big {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 50px;
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.result-hero .big .unit {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--neutral-300);
+  letter-spacing: -0.005em;
+}
+.result-hero .sub {
+  font-size: 13px;
+  color: var(--neutral-300);
+  line-height: 1.45;
+}
+
+.result-card {
+  background: var(--neutral-0);
+  border: 1px solid var(--neutral-300);
+  border-radius: 16px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.result-card-title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--neutral-900);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.result-card-title .pill {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brand);
+  background: var(--brand-soft);
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+.rows { display: flex; flex-direction: column; }
+.rows .r {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--neutral-200);
+  font-size: 13px;
+}
+.rows .r:last-child { border-bottom: none; padding-bottom: 0; }
+.rows .r .lbl { color: var(--neutral-700); }
+.rows .r .lbl .meta {
+  display: block;
+  font-size: 11px;
+  color: var(--neutral-500);
+  margin-top: 2px;
+}
+.rows .r .val {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--neutral-900);
+}
+.rows .r--accent .val { color: var(--brand); }
+.rows .r--accent .lbl { color: var(--brand); font-weight: 500; }
+.rows .r--strong { padding: 11px 0; }
+.rows .r--strong .val { font-size: 16px; }
+.rows .r--negative .val { color: var(--status-error); }
+
+/* =========================================================================
+ * Donut
+ * ========================================================================= */
+.donut-card { display: flex; flex-direction: column; gap: 14px; }
+.donut-wrap {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 18px;
+  align-items: center;
+}
+.donut-wrap svg { display: block; width: 160px; height: 160px; }
+.donut-center {
+  pointer-events: none;
+}
+.donut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.donut-legend .lg {
+  display: grid;
+  grid-template-columns: 12px 1fr auto;
+  gap: 8px;
+  align-items: baseline;
+  font-size: 12px;
+}
+.donut-legend .lg .sw {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  align-self: center;
+}
+.donut-legend .lg .nm { color: var(--neutral-800); font-weight: 500; }
+.donut-legend .lg .nm .sub {
+  display: block;
+  font-size: 10px;
+  color: var(--neutral-500);
+  font-weight: 400;
+  margin-top: 1px;
+}
+.donut-legend .lg .vl {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--neutral-900);
+  font-size: 12px;
+  text-align: right;
+}
+
+/* =========================================================================
+ * Toast
+ * ========================================================================= */
+.toast {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--neutral-900);
+  color: var(--neutral-0);
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease-out, transform 200ms ease-out;
+  z-index: 1000;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.toast svg { width: 16px; height: 16px; stroke: var(--bring-mint); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Footer note */
+.footer-note {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 48px 40px;
+  font-size: 12px;
+  color: var(--neutral-500);
+  line-height: 1.5;
+}
+
+/* =========================================================================
+ * Print
+ * ========================================================================= */
+.print-only { display: none; }
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 16mm 14mm;
+  }
+  html, body {
+    background: #fff !important;
+    min-width: 0;
+    font-size: 11pt;
+    color: #000;
+  }
+  header.app-header { display: none !important; }
+  main { display: block !important; padding: 0 !important; max-width: none !important; margin: 0 !important; }
+  .sections { display: none !important; }
+  aside.results { display: none !important; }
+  .footer-note { display: none !important; }
+  .btn, .print-cta, .toast { display: none !important; }
+  .print-only { display: block !important; }
+}
+
+/* =========================================================================
+ * Print summary
+ * ========================================================================= */
+.print-doc {
+  font-family: var(--font-sans);
+  color: #111;
+}
+.print-doc .doc-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--posten-burgundy);
+  margin-bottom: 18px;
+}
+.print-doc .doc-head h2 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 22pt;
+  letter-spacing: -0.01em;
+  color: var(--posten-burgundy);
+  margin: 0 0 4px;
+}
+.print-doc .doc-head .sub {
+  font-size: 10pt;
+  color: var(--neutral-600);
+}
+.print-doc .doc-head .meta {
+  text-align: right;
+  font-size: 9pt;
+  color: var(--neutral-700);
+}
+.print-doc .doc-head .meta strong { color: var(--neutral-900); font-weight: 600; }
+.print-doc .doc-head .meta .roundel-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 12pt;
+  color: var(--neutral-900);
+  margin-bottom: 6px;
+}
+.print-doc .doc-head .meta .roundel-mark .roundel {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: linear-gradient(180deg, var(--neutral-700) 0 50%, var(--posten-red) 50% 100%);
+}
+.print-doc .doc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 24px;
+  margin-bottom: 18px;
+}
+.print-doc .pblock h3 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 11pt;
+  color: var(--posten-burgundy);
+  margin: 0 0 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--neutral-300);
+}
+.print-doc .pblock dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  row-gap: 4px;
+  column-gap: 12px;
+  font-size: 10pt;
+}
+.print-doc .pblock dt { color: var(--neutral-700); }
+.print-doc .pblock dd {
+  margin: 0;
+  text-align: right;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--neutral-900);
+}
+.print-doc .result-block {
+  border: 1.5px solid var(--posten-burgundy);
+  border-radius: 6px;
+  padding: 14px 18px;
+  margin-bottom: 14px;
+}
+.print-doc .result-block .headline {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px solid var(--neutral-300);
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+}
+.print-doc .result-block .headline .label {
+  font-family: var(--font-display);
+  font-size: 12pt;
+  font-weight: 500;
+  color: var(--posten-burgundy);
+}
+.print-doc .result-block .headline .value {
+  font-family: var(--font-display);
+  font-size: 20pt;
+  font-weight: 500;
+  color: var(--posten-burgundy);
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+.print-doc .result-block .r-rows {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 24px;
+  font-size: 10pt;
+}
+.print-doc .result-block .r-rows .rr {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 0;
+  border-bottom: 1px dotted var(--neutral-300);
+}
+.print-doc .result-block .r-rows .rr .v {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.print-doc .pfoot {
+  margin-top: 16px;
+  padding-top: 10px;
+  border-top: 1px solid var(--neutral-300);
+  font-size: 8.5pt;
+  color: var(--neutral-600);
+  line-height: 1.5;
+}
+.print-doc .pfoot strong { color: var(--neutral-900); }
+.print-doc .gradient-line {
+  height: 3px;
+  background: linear-gradient(90deg, #E32D22 0%, #FFFFFF 50%, #56B529 100%);
+  margin: 18px 0 10px;
+}
+</style>
+</head>
+<body>
+
+<div class="brand-gradient"></div>
+
+<header class="app-header">
+  <div class="header-inner">
+    <div>
+      <div class="brand-mark">
+        <span class="roundel" aria-hidden="true"></span>
+        <span class="wordmark">posten <span>bring</span></span>
+      </div>
+    </div>
+    <div class="header-title" style="flex:1; padding: 0 24px;">
+      <h1>Priskalkulator – elektrisk varebil</h1>
+      <p>Regn ut driftskostnad og veiledende timepris for én elbil i tjeneste, eks. mva. Alle felter oppdateres i sanntid.</p>
+    </div>
+    <div class="header-actions">
+      <span class="meta-date" id="metaDate">—</span>
+      <div class="row">
+        <button class="btn btn-ghost" id="resetBtn" type="button" title="Nullstill alle felter">
+          <svg class="icn" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+          Nullstill
+        </button>
+        <button class="btn btn-ghost" id="copyBtn" type="button" title="Kopier delbar lenke">
+          <svg class="icn" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>
+          Kopier lenke
+        </button>
+        <button class="btn btn-ghost" id="emailBtn" type="button" title="Send på e-post">
+          <svg class="icn" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+          E-post
+        </button>
+        <button class="btn btn-primary" id="printBtn" type="button">
+          <svg class="icn" viewBox="0 0 24 24"><path d="M6 9V3h12v6"/><rect x="6" y="14" width="12" height="7"/><path d="M6 18H3v-7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v7h-3"/></svg>
+          Skriv ut / PDF
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- INPUTS ============================================================== -->
+  <div class="sections">
+
+    <section class="section">
+      <header class="section-head">
+        <span class="section-num">01 · Drift</span>
+      </header>
+      <h2 class="section-title">Kjørelengde</h2>
+      <p class="section-hint">Hvor langt bilen typisk kjører per arbeidsdag.</p>
+      <div class="field-grid field-grid--full">
+        <div class="field">
+          <label for="kmPerDay">Kjørelengde per dag</label>
+          <div class="input-wrap has-suffix">
+            <input type="number" id="kmPerDay" min="0" step="1" value="120">
+            <span class="input-suffix">km/dag</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <header class="section-head">
+        <span class="section-num">02 · Strøm</span>
+      </header>
+      <h2 class="section-title">Energiforbruk</h2>
+      <p class="section-hint">Forbruk regnes ut fra biltype, eller overstyres manuelt.</p>
+      <div class="field-grid field-grid--full">
+        <div class="field">
+          <label for="vehicleType">Biltype</label>
+          <div class="input-wrap">
+            <select id="vehicleType">
+              <option value="0.20">Liten varebil — 0,20 kWh/km</option>
+              <option value="0.30" selected>Stor varebil — 0,30 kWh/km</option>
+              <option value="0.45">Skapbil — 0,45 kWh/km</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="field-grid">
+        <div class="field">
+          <label for="kwhOverride">Overstyr kWh/km <span class="sub">(valgfritt)</span></label>
+          <div class="input-wrap has-suffix">
+            <input type="number" id="kwhOverride" min="0" step="0.01" placeholder="0,30">
+            <span class="input-suffix">kWh/km</span>
+          </div>
+        </div>
+        <div class="field">
+          <label for="powerPrice">Strømpris</label>
+          <div class="input-wrap has-suffix">
+            <input type="number" id="powerPrice" min="0" step="0.01" value="1.80">
+            <span class="input-suffix">kr/kWh</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--wide">
+      <header class="section-head">
+        <span class="section-num">03 · Faste kostnader</span>
+      </header>
+      <h2 class="section-title">Månedlige driftskostnader</h2>
+      <p class="section-hint">Faste poster som påløper hver måned, uavhengig av bruk. Du kan legge til egne linjer nederst.</p>
+      <div class="field-grid">
+        <div class="field">
+          <label for="costLeasing">Leasing <span class="sub">· kapital</span></label>
+          <div class="input-wrap has-suffix">
+            <input type="number" id="costLeasing" min="0" step="100" value="6500">
+            <span class="input-suffix">kr/mnd</span>
+          </div>
+        </div>
+        <div class="field">
+          <label for="costInsurance">Forsikring <span class="sub">· kapital</span></label>
+          <div class="input-wrap has-suffix">
+            <input type="number" id="costInsurance" min="0" step="50" value="1100">
+            <span class="input-suffix">kr/mnd</span>
+          </div>
+        </div>
+        <div class="field">
+          <label for="costService">Service / vedlikehold <span class="sub">· kapital</span></label>
+          <div class="input-wrap has-suffix">
+            <input type="number" id="costService" min="0" step="50" value="600">
+            <span class="input-suffix">kr/mnd</span>
+          </div>
+        </div>
+        <div class="field">
+          <label for="costOffice">Kontor / parkering <span class="sub">· kapital</span></label>
+          <div class="input-wrap has-suffix">
+            <input type="number" id="costOffice" min="0" step="50" value="800">
+            <span class="input-suffix">kr/mnd</span>
+          </div>
+        </div>
+        <div class="field">
+          <label for="costTires">Dekk / dekkhotell</label>
+          <div class="input-wrap has-suffix">
+            <input type="number" id="costTires" min="0" step="50" value="400">
+            <span class="input-suffix">kr/mnd</span>
+          </div>
+        </div>
+        <div class="field">
+          <label for="costDamage">Skade / erstatninger</label>
+          <div class="input-wrap has-suffix">
+            <input type="number" id="costDamage" min="0" step="50" value="500">
+            <span class="input-suffix">kr/mnd</span>
+          </div>
+        </div>
+        <div class="field">
+          <label for="costToll">Bompenger</label>
+          <div class="input-wrap has-suffix">
+            <input type="number" id="costToll" min="0" step="50" value="900">
+            <span class="input-suffix">kr/mnd</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="custom-costs" id="customCosts"></div>
+      <button type="button" class="btn-add" id="addCostBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        Legg til kostnad
+      </button>
+
+      <div class="subtotal">
+        <span class="lbl">Sum faste månedskostnader</span>
+        <span class="val"><span id="rFixedTotal">—</span> kr</span>
+      </div>
+    </section>
+
+    <section class="section section--wide">
+      <header class="section-head">
+        <span class="section-num">04 · Kapitalfordeling</span>
+      </header>
+      <h2 class="section-title">Andel kapital i timeprisen</h2>
+      <p class="section-hint">Velg hvor stor andel av <strong>kapitalkostnader</strong> (leasing + forsikring + service + kontor/parkering) som inngår i timeprisen. Resten holdes utenfor. Dekk, skade, bompenger og egne linjer regnes alltid 100 % inn.</p>
+      <div class="slider-row">
+        <div class="top">
+          <span class="label">Kapitalandel</span>
+          <span class="display">
+            <span class="pct" id="capPctShow">100%</span>
+            <span id="capInclShow">— kr/mnd inkludert</span>
+          </span>
+        </div>
+        <input type="range" id="capitalPct" min="0" max="100" step="1" value="100">
+      </div>
+      <div class="cap-breakdown">
+        <div class="cap-tile"><div class="l">Samlet kapitalpott</div><div class="v"><span id="capPotShow">—</span> kr</div></div>
+        <div class="cap-tile in"><div class="l">Inkludert i beregningen</div><div class="v"><span id="capInShow">—</span> kr</div></div>
+        <div class="cap-tile out"><div class="l">Holdes utenfor</div><div class="v"><span id="capOutShow">—</span> kr</div></div>
+      </div>
+    </section>
+
+    <section class="section section--wide">
+      <header class="section-head">
+        <span class="section-num">05 · Sjåfør og arbeidstid</span>
+      </header>
+      <h2 class="section-title">Lønn og arbeidsuke</h2>
+      <p class="section-hint">Bruttolønn, sosiale kostnader og hvilke timer bilen er bemannet.</p>
+
+      <div class="field-grid field-grid--3">
+        <div class="field">
+          <label for="grossWage">Bruttolønn</label>
+          <div class="input-wrap has-suffix">
+            <input type="number" id="grossWage" min="0" step="1" value="240">
+            <span class="input-suffix">kr/time</span>
+          </div>
+        </div>
+        <div class="field">
+          <label for="socialPct">Sosiale kostnader</label>
+          <div class="input-wrap has-suffix">
+            <input type="number" id="socialPct" min="0" step="0.5" value="36">
+            <span class="input-suffix">%</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Beregnet sjåførkost</label>
+          <div class="input-wrap has-suffix" style="background:var(--neutral-100); border-radius:10px;">
+            <input type="text" id="driverHourlyShow" value="—" readonly style="background:transparent; border-color:var(--neutral-200); font-weight:600;">
+            <span class="input-suffix">kr/time</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="field-grid field-grid--3">
+        <div class="field">
+          <label for="shiftFrom">Arbeidstid fra</label>
+          <div class="input-wrap">
+            <input type="time" id="shiftFrom" value="07:00">
+          </div>
+        </div>
+        <div class="field">
+          <label for="shiftTo">Arbeidstid til</label>
+          <div class="input-wrap">
+            <input type="time" id="shiftTo" value="15:00">
+          </div>
+        </div>
+        <div class="field">
+          <label>Timer per dag</label>
+          <div class="input-wrap has-suffix" style="background:var(--neutral-100); border-radius:10px;">
+            <input type="text" id="hoursPerDayShow" value="—" readonly style="background:transparent; border-color:var(--neutral-200); font-weight:600;">
+            <span class="input-suffix">t/dag</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Ukedager bilen er i drift</label>
+        <div class="weekdays" id="weekdays">
+          <div class="weekday"><input type="checkbox" id="d1" data-day="1" checked><label for="d1">Man</label></div>
+          <div class="weekday"><input type="checkbox" id="d2" data-day="2" checked><label for="d2">Tir</label></div>
+          <div class="weekday"><input type="checkbox" id="d3" data-day="3" checked><label for="d3">Ons</label></div>
+          <div class="weekday"><input type="checkbox" id="d4" data-day="4" checked><label for="d4">Tor</label></div>
+          <div class="weekday"><input type="checkbox" id="d5" data-day="5" checked><label for="d5">Fre</label></div>
+          <div class="weekday"><input type="checkbox" id="d6" data-day="6"><label for="d6">Lør</label></div>
+          <div class="weekday"><input type="checkbox" id="d7" data-day="7"><label for="d7">Søn</label></div>
+        </div>
+      </div>
+
+      <div class="driver-stats">
+        <div class="driver-stat"><div class="l">Timer per uke</div><div class="v"><span id="dHoursWeek">—</span> t</div></div>
+        <div class="driver-stat"><div class="l">Effektive timer per måned</div><div class="v"><span id="dHoursMonth">—</span> t</div></div>
+        <div class="driver-stat"><div class="l">Effektive timer per år</div><div class="v"><span id="dHoursYear">—</span> t</div></div>
+        <div class="driver-stat"><div class="l">Sosial kostnad</div><div class="v"><span id="dSocialKr">—</span> kr/time</div></div>
+        <div class="driver-stat"><div class="l">Sjåførkost inkl. sosiale</div><div class="v"><span id="dDriverHour">—</span> kr/time</div></div>
+        <div class="driver-stat"><div class="l">Sjåførkost per måned</div><div class="v"><span id="dDriverMonth">—</span> kr</div></div>
+      </div>
+    </section>
+
+    <section class="section section--wide">
+      <header class="section-head">
+        <span class="section-num">06 · Konsernfelles og margin</span>
+      </header>
+      <h2 class="section-title">Påslag på selvkost</h2>
+      <p class="section-hint">Konsernfelles trekkes fra salgspris — selvkosten justeres opp så den dekkes. Margin legges deretter på.</p>
+      <div class="field-grid">
+        <div class="field">
+          <label for="groupPct">Konsernfelles <span class="sub">· trekkes fra salgspris</span></label>
+          <div class="input-wrap has-suffix">
+            <input type="number" id="groupPct" min="0" max="99" step="0.5" value="6">
+            <span class="input-suffix">%</span>
+          </div>
+        </div>
+        <div class="field">
+          <label for="marginPct">Marginpåslag <span class="sub">· på justert selvkost</span></label>
+          <div class="input-wrap has-suffix">
+            <input type="number" id="marginPct" min="0" step="0.5" value="15">
+            <span class="input-suffix">%</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- RESULTS ============================================================= -->
+  <aside class="results">
+
+    <div class="result-hero">
+      <div class="eyebrow">Veiledende timepris · eks. mva</div>
+      <div class="big">
+        <span id="rHourPrice">—</span>
+        <span class="unit">kr / time</span>
+      </div>
+      <div class="sub">Justert selvkost + <span id="rMarginShown">15</span>% margin, etter konsernfellestrekk.</div>
+    </div>
+
+    <div class="result-card">
+      <h3 class="result-card-title">Salgspris med margin <span class="pill">Eks. mva</span></h3>
+      <div class="rows">
+        <div class="r r--accent r--strong">
+          <div class="lbl">Per time</div>
+          <div class="val"><span id="rHourPrice2">—</span> kr</div>
+        </div>
+        <div class="r">
+          <div class="lbl">Per uke <span class="meta" id="rHoursWeekMeta">— timer/uke</span></div>
+          <div class="val"><span id="rWeekPrice">—</span> kr</div>
+        </div>
+        <div class="r">
+          <div class="lbl">Per måned <span class="meta" id="rHoursMonthMeta">— timer/mnd</span></div>
+          <div class="val"><span id="rMonthPrice">—</span> kr</div>
+        </div>
+        <div class="r">
+          <div class="lbl">Per år</div>
+          <div class="val"><span id="rYearPrice">—</span> kr</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="result-card donut-card">
+      <h3 class="result-card-title">Kostnadsfordeling <span class="pill">Per måned</span></h3>
+      <div class="donut-wrap">
+        <svg id="donutSvg" viewBox="0 0 100 100" aria-hidden="true"></svg>
+        <div class="donut-legend" id="donutLegend"></div>
+      </div>
+    </div>
+
+    <div class="result-card">
+      <h3 class="result-card-title">Selvkost og detaljer</h3>
+      <div class="rows">
+        <div class="r">
+          <div class="lbl">Selvkost per time</div>
+          <div class="val"><span id="rHourCost">—</span> kr</div>
+        </div>
+        <div class="r">
+          <div class="lbl">Justert selvkost per time <span class="meta">etter konsernfelles-oppjustering</span></div>
+          <div class="val"><span id="rAdjHourCost">—</span> kr</div>
+        </div>
+        <div class="r">
+          <div class="lbl">Sjåførkost per time <span class="meta">inkl. sosiale kostnader</span></div>
+          <div class="val"><span id="rDriverHourCost">—</span> kr</div>
+        </div>
+        <div class="r">
+          <div class="lbl">Strømkost per måned <span class="meta" id="rPowerMeta">— kWh/km · — kr/kWh</span></div>
+          <div class="val"><span id="rPowerMonth">—</span> kr</div>
+        </div>
+        <div class="r">
+          <div class="lbl">Sum faste kostnader / mnd <span class="meta" id="rFixedMeta">etter kapitalfordeling</span></div>
+          <div class="val"><span id="rFixedMonth">—</span> kr</div>
+        </div>
+        <div class="r r--negative">
+          <div class="lbl">Konsernfellestrekk / mnd <span class="meta" id="rGroupMeta">— % av salgspris</span></div>
+          <div class="val">− <span id="rGroupMonth">—</span> kr</div>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+</main>
+
+<div class="footer-note">
+  Alle beløp er oppgitt eks. mva. Kalkulatoren er et verktøy for indikativ prising; faktiske kostnader vil variere med kjøremønster, strømpris og driftsforhold.
+</div>
+
+<!-- ===========================================================
+     PRINT-ONLY DOCUMENT
+     =========================================================== -->
+<div class="print-only">
+  <div class="print-doc">
+    <div class="doc-head">
+      <div>
+        <h2>Priskalkulator — elektrisk varebil</h2>
+        <div class="sub">Veiledende timeprisestimat · Alle beløp eks. mva</div>
+      </div>
+      <div class="meta">
+        <div class="roundel-mark">
+          <span class="roundel"></span>
+          posten bring
+        </div>
+        <strong id="pDate">—</strong><br>
+        Dokument generert av Priskalkulator
+      </div>
+    </div>
+
+    <div class="doc-grid">
+      <div class="pblock">
+        <h3>01–02 · Drift og strøm</h3>
+        <dl>
+          <dt>Km per dag</dt><dd><span id="pKm">—</span> km</dd>
+          <dt>Biltype</dt><dd><span id="pVehicle">—</span></dd>
+          <dt>Forbruk</dt><dd><span id="pKwh">—</span> kWh/km</dd>
+          <dt>Strømpris</dt><dd><span id="pPower">—</span> kr/kWh</dd>
+          <dt>Strømkostnad / mnd</dt><dd><span id="pPowerMonth">—</span> kr</dd>
+        </dl>
+      </div>
+      <div class="pblock">
+        <h3>03 · Faste månedskostnader</h3>
+        <dl id="pFixedList"></dl>
+      </div>
+      <div class="pblock">
+        <h3>04 · Kapitalfordeling</h3>
+        <dl>
+          <dt>Kapitalpott</dt><dd><span id="pCapPot">—</span> kr</dd>
+          <dt>Andel inkludert</dt><dd><span id="pCapPct">—</span> %</dd>
+          <dt>Beløp inkludert</dt><dd><span id="pCapIn">—</span> kr</dd>
+          <dt>Beløp utenfor</dt><dd><span id="pCapOut">—</span> kr</dd>
+          <dt><strong>Sum faste / mnd</strong></dt><dd><strong><span id="pFixedMonth">—</span> kr</strong></dd>
+        </dl>
+      </div>
+      <div class="pblock">
+        <h3>05 · Sjåfør og arbeidstid</h3>
+        <dl>
+          <dt>Bruttolønn</dt><dd><span id="pWage">—</span> kr/t</dd>
+          <dt>Sosiale kostnader</dt><dd><span id="pSocial">—</span> %</dd>
+          <dt>Arbeidstid</dt><dd><span id="pShift">—</span></dd>
+          <dt>Dager / uke</dt><dd><span id="pDays">—</span></dd>
+          <dt>Timer per uke</dt><dd><span id="pHoursWeek">—</span> t</dd>
+          <dt>Timer per måned</dt><dd><span id="pHoursMonth">—</span> t</dd>
+          <dt>Sjåførkost per time</dt><dd><span id="pDriverHour">—</span> kr</dd>
+          <dt><strong>Sjåførkost / mnd</strong></dt><dd><strong><span id="pDriverMonth">—</span> kr</strong></dd>
+        </dl>
+      </div>
+      <div class="pblock">
+        <h3>06 · Påslag</h3>
+        <dl>
+          <dt>Konsernfelles</dt><dd><span id="pGroup">—</span> %</dd>
+          <dt>Margin</dt><dd><span id="pMargin">—</span> %</dd>
+          <dt>Konsernfellestrekk / mnd</dt><dd>− <span id="pGroupMonth">—</span> kr</dd>
+        </dl>
+      </div>
+      <div class="pblock">
+        <h3>Kostnadsfordeling (salgspris)</h3>
+        <dl id="pBreakdown"></dl>
+      </div>
+    </div>
+
+    <div class="gradient-line"></div>
+
+    <div class="result-block">
+      <div class="headline">
+        <span class="label">Veiledende timepris (eks. mva)</span>
+        <span class="value"><span id="pHourPrice">—</span> kr</span>
+      </div>
+      <div class="r-rows">
+        <div class="rr"><span>Selvkost per time</span><span class="v"><span id="pHourCost">—</span> kr</span></div>
+        <div class="rr"><span>Justert selvkost per time</span><span class="v"><span id="pAdjHourCost">—</span> kr</span></div>
+        <div class="rr"><span>Selvkost per uke</span><span class="v"><span id="pWeekCost">—</span> kr</span></div>
+        <div class="rr"><span>Salgspris per uke</span><span class="v"><span id="pWeekPrice">—</span> kr</span></div>
+        <div class="rr"><span>Selvkost per måned</span><span class="v"><span id="pMonthCost">—</span> kr</span></div>
+        <div class="rr"><span>Salgspris per måned</span><span class="v"><span id="pMonthPrice">—</span> kr</span></div>
+        <div class="rr"><span>Selvkost per år</span><span class="v"><span id="pYearCost">—</span> kr</span></div>
+        <div class="rr"><span>Salgspris per år</span><span class="v"><span id="pYearPrice">—</span> kr</span></div>
+      </div>
+    </div>
+
+    <div class="pfoot">
+      <strong>Beregningsmetode.</strong> Selvkost per time = (kapital inkludert + andre faste + strøm/mnd + sjåførkost/mnd) ÷ (timer per uke × 52/12). Justert selvkost = selvkost ÷ (1 − konsernfelles%). Timepris = justert selvkost × (1 + margin%).
+      Sjåførkost per time = bruttolønn × (1 + sosiale%). Strømkostnad / mnd = km/dag × kWh/km × kr/kWh × 365/12. Kapitalpotten består av leasing + forsikring + service + kontor/parkering; resten av faste kostnader regnes alltid 100 % inn.
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toastMsg">Kopiert!</span>
+</div>
+
+<script>
+/* ===========================================================
+ * Helpers
+ * =========================================================== */
+const $ = (id) => document.getElementById(id);
+const nf2 = new Intl.NumberFormat('nb-NO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const nf0 = new Intl.NumberFormat('nb-NO', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+const nf2plain = (n) => isFinite(n) ? nf2.format(n) : '—';
+const nf0plain = (n) => isFinite(n) ? nf0.format(n) : '—';
+
+function num(id) {
+  const el = $(id);
+  if (!el) return 0;
+  const v = parseFloat(String(el.value).replace(',', '.'));
+  return isFinite(v) ? v : 0;
+}
+
+function vehicleLabel(val) {
+  if (val === 0.20) return 'Liten varebil';
+  if (val === 0.30) return 'Stor varebil';
+  if (val === 0.45) return 'Skapbil';
+  return 'Egendefinert';
+}
+
+/* ===========================================================
+ * Defaults & state
+ * =========================================================== */
+const DEFAULTS = {
+  kmPerDay: 120,
+  vehicleType: '0.30',
+  kwhOverride: '',
+  powerPrice: 1.80,
+  costLeasing: 6500,
+  costInsurance: 1100,
+  costService: 600,
+  costOffice: 800,
+  costTires: 400,
+  costDamage: 500,
+  costToll: 900,
+  capitalPct: 100,
+  grossWage: 240,
+  socialPct: 36,
+  shiftFrom: '07:00',
+  shiftTo: '15:00',
+  days: [1,2,3,4,5],
+  groupPct: 6,
+  marginPct: 15,
+  custom: []  // [{name, amount}]
+};
+
+const numericInputs = [
+  'kmPerDay','kwhOverride','powerPrice',
+  'costLeasing','costInsurance','costService','costOffice',
+  'costTires','costDamage','costToll',
+  'grossWage','socialPct','groupPct','marginPct'
+];
+
+/* ===========================================================
+ * Custom cost rows
+ * =========================================================== */
+let customRows = []; // {id, name, amount}
+let customSeq = 0;
+
+function addCustomRow(name = '', amount = '') {
+  customSeq += 1;
+  const row = { id: customSeq, name, amount };
+  customRows.push(row);
+  renderCustomRows();
+  return row;
+}
+
+function removeCustomRow(id) {
+  customRows = customRows.filter(r => r.id !== id);
+  renderCustomRows();
+  render();
+}
+
+function renderCustomRows() {
+  const container = $('customCosts');
+  container.innerHTML = '';
+  customRows.forEach(row => {
+    const el = document.createElement('div');
+    el.className = 'custom-row';
+    el.innerHTML = `
+      <input type="text" placeholder="Navn på kostnad" value="${row.name.replace(/"/g,'&quot;')}" data-cid="${row.id}" data-field="name">
+      <div class="amount-wrap">
+        <input type="number" min="0" step="50" placeholder="0" value="${row.amount}" data-cid="${row.id}" data-field="amount">
+        <span class="suf">kr/mnd</span>
+      </div>
+      <button type="button" class="btn-del" data-del="${row.id}" title="Fjern">
+        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    `;
+    container.appendChild(el);
+  });
+
+  container.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('input', (e) => {
+      const id = parseInt(e.target.dataset.cid, 10);
+      const field = e.target.dataset.field;
+      const row = customRows.find(r => r.id === id);
+      if (!row) return;
+      row[field] = field === 'amount' ? e.target.value : e.target.value;
+      render();
+    });
+  });
+  container.querySelectorAll('[data-del]').forEach(btn => {
+    btn.addEventListener('click', () => removeCustomRow(parseInt(btn.dataset.del, 10)));
+  });
+}
+
+function customTotal() {
+  return customRows.reduce((s, r) => {
+    const v = parseFloat(String(r.amount).replace(',', '.'));
+    return s + (isFinite(v) ? v : 0);
+  }, 0);
+}
+
+/* ===========================================================
+ * Weekdays
+ * =========================================================== */
+function getDays() {
+  return Array.from(document.querySelectorAll('#weekdays input:checked'))
+    .map(c => parseInt(c.dataset.day, 10));
+}
+
+function setDays(days) {
+  document.querySelectorAll('#weekdays input').forEach(c => {
+    c.checked = days.includes(parseInt(c.dataset.day, 10));
+  });
+}
+
+/* ===========================================================
+ * Time helpers
+ * =========================================================== */
+function parseTime(str) {
+  if (!str) return 0;
+  const [h, m] = str.split(':').map(Number);
+  return (h || 0) + (m || 0) / 60;
+}
+
+function hoursPerDay() {
+  const from = parseTime($('shiftFrom').value);
+  const to = parseTime($('shiftTo').value);
+  let diff = to - from;
+  if (diff < 0) diff = 0;
+  return diff;
+}
+
+/* ===========================================================
+ * Core compute
+ * =========================================================== */
+function compute() {
+  const kmPerDay      = num('kmPerDay');
+  const vehicleType   = parseFloat($('vehicleType').value);
+  const kwhOverrideRaw = $('kwhOverride').value.trim();
+  const kwhOverride   = kwhOverrideRaw === '' ? null : parseFloat(kwhOverrideRaw.replace(',', '.'));
+  const kwhPerKm      = (kwhOverride !== null && isFinite(kwhOverride) && kwhOverride > 0) ? kwhOverride : vehicleType;
+  const powerPrice    = num('powerPrice');
+
+  const cLeasing   = num('costLeasing');
+  const cInsurance = num('costInsurance');
+  const cService   = num('costService');
+  const cOffice    = num('costOffice');
+  const cTires     = num('costTires');
+  const cDamage    = num('costDamage');
+  const cToll      = num('costToll');
+  const cCustom    = customTotal();
+
+  const capitalPool = cLeasing + cInsurance + cService + cOffice;
+  const otherFixed  = cTires + cDamage + cToll + cCustom;
+
+  const capitalPct  = num('capitalPct');
+  const capFrac     = Math.min(1, Math.max(0, capitalPct / 100));
+  const capitalIn   = capitalPool * capFrac;
+  const capitalOut  = capitalPool - capitalIn;
+
+  const fixedTotalAll = capitalPool + otherFixed;
+  const fixedIncluded = capitalIn + otherFixed;
+
+  const grossWage = num('grossWage');
+  const socialPct = num('socialPct');
+  const driverHourCost = grossWage * (1 + socialPct / 100);
+
+  const hpd = hoursPerDay();
+  const days = getDays();
+  const hoursPerWeek = hpd * days.length;
+  const hoursPerMonth = hoursPerWeek * (52 / 12);
+  const hoursPerYear  = hoursPerWeek * 52;
+
+  const driverMonth = driverHourCost * hoursPerMonth;
+  const socialKrHour = grossWage * (socialPct / 100);
+
+  // Power
+  const powerPerDay   = kmPerDay * kwhPerKm * powerPrice;
+  const powerPerMonth = powerPerDay * (365 / 12);
+
+  // Total monthly self-cost
+  const monthCost = fixedIncluded + powerPerMonth + driverMonth;
+
+  const hourCost = hoursPerMonth > 0 ? monthCost / hoursPerMonth : 0;
+
+  const groupPct = num('groupPct');
+  const groupFrac = Math.min(0.99, Math.max(0, groupPct / 100));
+  const adjHourCost = hourCost / (1 - groupFrac);
+
+  const marginPct = num('marginPct');
+  const hourPrice = adjHourCost * (1 + marginPct / 100);
+
+  const weekCost  = hourCost  * hoursPerWeek;
+  const yearCost  = monthCost * 12;
+  const weekPrice = hourPrice * hoursPerWeek;
+  const monthPrice = hourPrice * hoursPerMonth;
+  const yearPrice = monthPrice * 12;
+  const groupMonth = monthPrice * groupFrac;
+  // monthPrice = monthCost + groupMonth + marginMonth (by construction)
+  const marginMonth = Math.max(0, monthPrice - monthCost - groupMonth);
+
+  return {
+    kmPerDay, vehicleType, kwhPerKm, powerPrice,
+    cLeasing, cInsurance, cService, cOffice, cTires, cDamage, cToll, cCustom,
+    capitalPool, otherFixed, capitalPct, capitalIn, capitalOut,
+    fixedTotalAll, fixedIncluded,
+    grossWage, socialPct, driverHourCost, socialKrHour, driverMonth,
+    hpd, days, hoursPerWeek, hoursPerMonth, hoursPerYear,
+    powerPerDay, powerPerMonth,
+    monthCost, hourCost, adjHourCost, hourPrice,
+    groupPct, groupFrac, marginPct,
+    weekCost, yearCost, weekPrice, monthPrice, yearPrice,
+    groupMonth, marginMonth
+  };
+}
+
+/* ===========================================================
+ * Donut chart (SVG, ren JS)
+ * =========================================================== */
+function renderDonut(r) {
+  const svg = $('donutSvg');
+  const legend = $('donutLegend');
+
+  const segments = [
+    { key: 'fixed',  name: 'Faste kostnader',  sub: 'Kapital + andre faste', color: '#8A8780', value: r.fixedIncluded },
+    { key: 'power',  name: 'Strøm',            sub: 'Per måned',             color: '#B5E099', value: r.powerPerMonth },
+    { key: 'driver', name: 'Sjåfør',           sub: 'Lønn + sosiale',        color: '#00643A', value: r.driverMonth },
+    { key: 'group',  name: 'Konsernfelles',    sub: 'Trekk fra salgspris',   color: '#4A1011', value: r.groupMonth },
+    { key: 'margin', name: 'Margin',           sub: 'Fortjeneste',           color: '#E32D22', value: Math.max(0, r.marginMonth) },
+  ];
+
+  const total = segments.reduce((s, x) => s + (x.value > 0 ? x.value : 0), 0);
+
+  // Build SVG
+  const cx = 50, cy = 50, R = 38, r0 = 26;
+  let segPaths = '';
+  if (total <= 0) {
+    segPaths = `<circle cx="${cx}" cy="${cy}" r="${R}" fill="#ECEAE5"/><circle cx="${cx}" cy="${cy}" r="${r0}" fill="#FFFFFF"/>`;
+  } else {
+    let acc = 0;
+    segments.forEach(seg => {
+      const v = seg.value > 0 ? seg.value : 0;
+      if (v <= 0) return;
+      const start = acc / total * Math.PI * 2 - Math.PI / 2;
+      acc += v;
+      const end = acc / total * Math.PI * 2 - Math.PI / 2;
+      const large = (end - start) > Math.PI ? 1 : 0;
+      const x1 = cx + R * Math.cos(start);
+      const y1 = cy + R * Math.sin(start);
+      const x2 = cx + R * Math.cos(end);
+      const y2 = cy + R * Math.sin(end);
+      const x3 = cx + r0 * Math.cos(end);
+      const y3 = cy + r0 * Math.sin(end);
+      const x4 = cx + r0 * Math.cos(start);
+      const y4 = cy + r0 * Math.sin(start);
+      const d = `M ${x1} ${y1} A ${R} ${R} 0 ${large} 1 ${x2} ${y2} L ${x3} ${y3} A ${r0} ${r0} 0 ${large} 0 ${x4} ${y4} Z`;
+      segPaths += `<path d="${d}" fill="${seg.color}"/>`;
+    });
+  }
+
+  const centerText = `
+    <g class="donut-center">
+      <text x="50" y="48" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="6" fill="#6E6E6E" font-weight="500" letter-spacing="0.3">SALGSPRIS</text>
+      <text x="50" y="58" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="10" fill="#111110" font-weight="600">${nf0plain(r.monthPrice)}</text>
+      <text x="50" y="66" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="4.5" fill="#6E6E6E">kr / mnd</text>
+    </g>
+  `;
+
+  svg.innerHTML = segPaths + centerText;
+
+  // Legend
+  legend.innerHTML = '';
+  segments.forEach(seg => {
+    const pct = total > 0 ? (seg.value / total) * 100 : 0;
+    const row = document.createElement('div');
+    row.className = 'lg';
+    row.innerHTML = `
+      <span class="sw" style="background:${seg.color}"></span>
+      <span class="nm">${seg.name}<span class="sub">${seg.sub} · ${nf2plain(pct)} %</span></span>
+      <span class="vl">${nf0plain(seg.value)} kr</span>
+    `;
+    legend.appendChild(row);
+  });
+
+  return segments;
+}
+
+/* ===========================================================
+ * Render
+ * =========================================================== */
+function render() {
+  const r = compute();
+
+  // Live displays in section 5
+  $('hoursPerDayShow').value = nf2plain(r.hpd);
+  $('driverHourlyShow').value = nf2plain(r.driverHourCost);
+  $('dHoursWeek').textContent  = nf2plain(r.hoursPerWeek);
+  $('dHoursMonth').textContent = nf2plain(r.hoursPerMonth);
+  $('dHoursYear').textContent  = nf2plain(r.hoursPerYear);
+  $('dSocialKr').textContent   = nf2plain(r.socialKrHour);
+  $('dDriverHour').textContent = nf2plain(r.driverHourCost);
+  $('dDriverMonth').textContent = nf0plain(r.driverMonth);
+
+  // Capital slider
+  $('capPctShow').textContent = `${nf0plain(r.capitalPct)}%`;
+  $('capInclShow').textContent = `${nf0plain(r.capitalIn)} kr/mnd inkludert`;
+  $('capPotShow').textContent = nf0plain(r.capitalPool);
+  $('capInShow').textContent  = nf0plain(r.capitalIn);
+  $('capOutShow').textContent = nf0plain(r.capitalOut);
+
+  // Sum faste subtotal (totalt før kapitalfordeling)
+  $('rFixedTotal').textContent = nf0plain(r.fixedTotalAll);
+
+  // Hero
+  $('rHourPrice').textContent  = nf2plain(r.hourPrice);
+  $('rMarginShown').textContent = nf0plain(r.marginPct);
+
+  // Sales price card
+  $('rHourPrice2').textContent = nf2plain(r.hourPrice);
+  $('rWeekPrice').textContent  = nf2plain(r.weekPrice);
+  $('rMonthPrice').textContent = nf2plain(r.monthPrice);
+  $('rYearPrice').textContent  = nf2plain(r.yearPrice);
+  $('rHoursWeekMeta').textContent  = `${nf2plain(r.hoursPerWeek)} timer/uke`;
+  $('rHoursMonthMeta').textContent = `${nf2plain(r.hoursPerMonth)} timer/mnd`;
+
+  // Self-cost & details
+  $('rHourCost').textContent = nf2plain(r.hourCost);
+  $('rAdjHourCost').textContent = nf2plain(r.adjHourCost);
+  $('rDriverHourCost').textContent = nf2plain(r.driverHourCost);
+  $('rPowerMonth').textContent = nf2plain(r.powerPerMonth);
+  $('rPowerMeta').textContent  = `${nf2plain(r.kwhPerKm)} kWh/km · ${nf2plain(r.powerPrice)} kr/kWh`;
+  $('rFixedMonth').textContent = nf2plain(r.fixedIncluded);
+  $('rFixedMeta').textContent  = `Kapital ${nf0plain(r.capitalPct)}% inkludert · andre faste 100%`;
+  $('rGroupMonth').textContent = nf2plain(r.groupMonth);
+  $('rGroupMeta').textContent  = `${nf2plain(r.groupPct)}% av salgspris`;
+
+  // Donut
+  const segments = renderDonut(r);
+
+  // Print
+  renderPrint(r, segments);
+}
+
+/* ===========================================================
+ * Print doc
+ * =========================================================== */
+function renderPrint(r, segments) {
+  $('pKm').textContent = nf0plain(r.kmPerDay);
+  $('pVehicle').textContent = vehicleLabel(r.vehicleType);
+  $('pKwh').textContent = nf2plain(r.kwhPerKm);
+  $('pPower').textContent = nf2plain(r.powerPrice);
+  $('pPowerMonth').textContent = nf2plain(r.powerPerMonth);
+
+  // Fixed list
+  const list = $('pFixedList');
+  const fixed = [
+    ['Leasing (kapital)', r.cLeasing],
+    ['Forsikring (kapital)', r.cInsurance],
+    ['Service / vedlikehold (kapital)', r.cService],
+    ['Kontor / parkering (kapital)', r.cOffice],
+    ['Dekk / dekkhotell', r.cTires],
+    ['Skade / erstatninger', r.cDamage],
+    ['Bompenger', r.cToll],
+  ];
+  customRows.forEach(c => {
+    const amt = parseFloat(String(c.amount).replace(',', '.')) || 0;
+    if (c.name || amt) fixed.push([c.name || 'Egendefinert', amt]);
+  });
+  list.innerHTML = fixed.map(([n, v]) => `<dt>${escapeHtml(n)}</dt><dd>${nf0plain(v)} kr</dd>`).join('') +
+    `<dt><strong>Sum (før fordeling)</strong></dt><dd><strong>${nf0plain(r.fixedTotalAll)} kr</strong></dd>`;
+
+  $('pCapPot').textContent = nf0plain(r.capitalPool);
+  $('pCapPct').textContent = nf0plain(r.capitalPct);
+  $('pCapIn').textContent = nf0plain(r.capitalIn);
+  $('pCapOut').textContent = nf0plain(r.capitalOut);
+  $('pFixedMonth').textContent = nf0plain(r.fixedIncluded);
+
+  $('pWage').textContent = nf2plain(r.grossWage);
+  $('pSocial').textContent = nf2plain(r.socialPct);
+  $('pShift').textContent = `${$('shiftFrom').value}–${$('shiftTo').value}`;
+  const dayNames = ['','Man','Tir','Ons','Tor','Fre','Lør','Søn'];
+  $('pDays').textContent = r.days.map(d => dayNames[d]).join(', ') || '—';
+  $('pHoursWeek').textContent = nf2plain(r.hoursPerWeek);
+  $('pHoursMonth').textContent = nf2plain(r.hoursPerMonth);
+  $('pDriverHour').textContent = nf2plain(r.driverHourCost);
+  $('pDriverMonth').textContent = nf0plain(r.driverMonth);
+
+  $('pGroup').textContent = nf2plain(r.groupPct);
+  $('pMargin').textContent = nf2plain(r.marginPct);
+  $('pGroupMonth').textContent = nf2plain(r.groupMonth);
+
+  // Breakdown
+  const total = segments.reduce((s, x) => s + (x.value > 0 ? x.value : 0), 0);
+  $('pBreakdown').innerHTML = segments.map(s => {
+    const pct = total > 0 ? (s.value / total) * 100 : 0;
+    return `<dt>${escapeHtml(s.name)} (${nf2plain(pct)}%)</dt><dd>${nf0plain(s.value)} kr</dd>`;
+  }).join('');
+
+  $('pHourPrice').textContent = nf2plain(r.hourPrice);
+  $('pHourCost').textContent = nf2plain(r.hourCost);
+  $('pAdjHourCost').textContent = nf2plain(r.adjHourCost);
+  $('pWeekCost').textContent = nf2plain(r.weekCost);
+  $('pWeekPrice').textContent = nf2plain(r.weekPrice);
+  $('pMonthCost').textContent = nf2plain(r.monthCost);
+  $('pMonthPrice').textContent = nf2plain(r.monthPrice);
+  $('pYearCost').textContent = nf2plain(r.yearCost);
+  $('pYearPrice').textContent = nf2plain(r.yearPrice);
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+}
+
+/* ===========================================================
+ * Date
+ * =========================================================== */
+function setDate() {
+  const d = new Date();
+  const fmt = new Intl.DateTimeFormat('nb-NO', { day: '2-digit', month: 'long', year: 'numeric' });
+  const s = fmt.format(d);
+  $('metaDate').textContent = s;
+  $('pDate').textContent = s;
+}
+
+/* ===========================================================
+ * URL serialisation
+ * =========================================================== */
+function serializeToURL() {
+  const p = new URLSearchParams();
+  numericInputs.forEach(id => p.set(id, $(id).value));
+  p.set('vehicleType', $('vehicleType').value);
+  p.set('capitalPct', $('capitalPct').value);
+  p.set('shiftFrom', $('shiftFrom').value);
+  p.set('shiftTo', $('shiftTo').value);
+  p.set('days', getDays().join(','));
+  if (customRows.length) {
+    p.set('custom', customRows.map(r => `${encodeURIComponent(r.name)}:${r.amount}`).join('|'));
+  }
+  return `${location.origin}${location.pathname}?${p.toString()}`;
+}
+
+function loadFromURL() {
+  const p = new URLSearchParams(location.search);
+  if (!p.toString()) return;
+  numericInputs.forEach(id => { if (p.has(id)) $(id).value = p.get(id); });
+  if (p.has('vehicleType')) $('vehicleType').value = p.get('vehicleType');
+  if (p.has('capitalPct')) $('capitalPct').value = p.get('capitalPct');
+  if (p.has('shiftFrom')) $('shiftFrom').value = p.get('shiftFrom');
+  if (p.has('shiftTo')) $('shiftTo').value = p.get('shiftTo');
+  if (p.has('days')) {
+    const days = p.get('days').split(',').filter(Boolean).map(Number);
+    setDays(days);
+  }
+  if (p.has('custom')) {
+    customRows = [];
+    p.get('custom').split('|').filter(Boolean).forEach(part => {
+      const [name, amount] = part.split(':');
+      addCustomRow(decodeURIComponent(name || ''), amount || '');
+    });
+  }
+}
+
+/* ===========================================================
+ * Toast
+ * =========================================================== */
+let toastTimer = null;
+function toast(msg) {
+  $('toastMsg').textContent = msg;
+  const t = $('toast');
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* ===========================================================
+ * Actions
+ * =========================================================== */
+async function copyLink() {
+  const url = serializeToURL();
+  try {
+    await navigator.clipboard.writeText(url);
+    toast('Lenke kopiert!');
+  } catch (e) {
+    const ta = document.createElement('textarea');
+    ta.value = url;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    toast('Lenke kopiert!');
+  }
+}
+
+function emailLink() {
+  const r = compute();
+  const d = new Intl.DateTimeFormat('nb-NO', { day: '2-digit', month: 'long', year: 'numeric' }).format(new Date());
+  const subject = `Priskalkulator varebil – ${d}`;
+  const body = [
+    `Priskalkulator – elektrisk varebil (${d})`,
+    `Alle beløp eks. mva.`,
+    ``,
+    `Veiledende timepris: ${nf2plain(r.hourPrice)} kr/time`,
+    `Salgspris per uke:   ${nf2plain(r.weekPrice)} kr`,
+    `Salgspris per måned: ${nf2plain(r.monthPrice)} kr`,
+    `Salgspris per år:    ${nf2plain(r.yearPrice)} kr`,
+    ``,
+    `— Drift —`,
+    `Km per dag: ${nf0plain(r.kmPerDay)}`,
+    `Biltype: ${vehicleLabel(r.vehicleType)} (${nf2plain(r.kwhPerKm)} kWh/km)`,
+    `Strømpris: ${nf2plain(r.powerPrice)} kr/kWh`,
+    `Strømkostnad/mnd: ${nf2plain(r.powerPerMonth)} kr`,
+    ``,
+    `— Sjåfør —`,
+    `Bruttolønn: ${nf2plain(r.grossWage)} kr/time`,
+    `Sosiale: ${nf2plain(r.socialPct)} %`,
+    `Sjåførkost/time: ${nf2plain(r.driverHourCost)} kr`,
+    `Arbeidstid: ${$('shiftFrom').value}–${$('shiftTo').value} (${r.days.length} dager/uke)`,
+    `Timer/uke: ${nf2plain(r.hoursPerWeek)} · timer/mnd: ${nf2plain(r.hoursPerMonth)}`,
+    ``,
+    `— Faste kostnader (kapital ${nf0plain(r.capitalPct)}% inkludert) —`,
+    `Kapitalpott: ${nf0plain(r.capitalPool)} kr (inkl. ${nf0plain(r.capitalIn)} / utenfor ${nf0plain(r.capitalOut)})`,
+    `Andre faste: ${nf0plain(r.otherFixed)} kr`,
+    `Sum inkludert: ${nf0plain(r.fixedIncluded)} kr/mnd`,
+    ``,
+    `— Påslag —`,
+    `Konsernfelles: ${nf2plain(r.groupPct)} % (${nf2plain(r.groupMonth)} kr/mnd)`,
+    `Margin: ${nf2plain(r.marginPct)} %`,
+    ``,
+    `Lenke til kalkylen:`,
+    serializeToURL(),
+  ].join('\n');
+
+  const href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  window.location.href = href;
+}
+
+function resetAll() {
+  if (!confirm('Er du sikker på at du vil nullstille alle felter til standardverdier?')) return;
+  for (const [id, val] of Object.entries(DEFAULTS)) {
+    if (id === 'days') continue;
+    if (id === 'custom') continue;
+    const el = $(id);
+    if (el) el.value = val;
+  }
+  setDays(DEFAULTS.days);
+  customRows = [];
+  renderCustomRows();
+  history.replaceState(null, '', location.pathname);
+  render();
+  toast('Nullstilt til standardverdier');
+}
+
+/* ===========================================================
+ * Wire-up
+ * =========================================================== */
+function wire() {
+  const ids = [
+    ...numericInputs,
+    'vehicleType','capitalPct','shiftFrom','shiftTo'
+  ];
+  ids.forEach(id => {
+    const el = $(id);
+    if (!el) return;
+    el.addEventListener('input', render);
+    el.addEventListener('change', render);
+  });
+  document.querySelectorAll('#weekdays input').forEach(c => {
+    c.addEventListener('change', render);
+  });
+
+  $('addCostBtn').addEventListener('click', () => { addCustomRow(); render(); });
+  $('printBtn').addEventListener('click', () => window.print());
+  $('copyBtn').addEventListener('click', copyLink);
+  $('emailBtn').addEventListener('click', emailLink);
+  $('resetBtn').addEventListener('click', resetAll);
+}
+
+/* ===========================================================
+ * Init
+ * =========================================================== */
+setDate();
+loadFromURL();
+wire();
+renderCustomRows();
+render();
+</script>
+
+</body>
+</html>
