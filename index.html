@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="nb">
+<html lang="nb-NO">
 <head>
 <meta charset="utf-8">
 <title>Priskalkulator – Varebil</title>
@@ -676,6 +676,105 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
  * Donut
  * ========================================================================= */
 .donut-card { display: flex; flex-direction: column; gap: 14px; }
+
+.seg-toggle.seg-mini {
+  padding: 2px;
+  border-radius: 10px;
+  align-self: flex-start;
+  border-width: 1px;
+}
+.seg-toggle.seg-mini .seg {
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 7px;
+  gap: 6px;
+}
+.seg-toggle.seg-mini .seg .dot { width: 7px; height: 7px; }
+
+.bd-view[hidden] { display: none; }
+
+.km-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.km-tile {
+  background: var(--neutral-100);
+  border-radius: 10px;
+  padding: 11px 12px;
+}
+.km-tile .lbl {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--neutral-600);
+  font-weight: 600;
+  margin-bottom: 6px;
+  line-height: 1.2;
+}
+.km-tile .val {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--neutral-900);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+.km-tile .unit {
+  font-size: 10px;
+  color: var(--neutral-500);
+  margin-top: 5px;
+}
+
+.km-totals {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.km-total {
+  background: var(--neutral-900);
+  color: var(--neutral-0);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.km-total.salgspris { background: var(--posten-red-deep); }
+.km-total .lbl {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  color: var(--bring-mint);
+  margin-bottom: 6px;
+}
+.km-total.salgspris .lbl { color: var(--posten-pink); }
+.km-total .val {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.015em;
+  line-height: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.km-total .val .unit {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--neutral-300);
+}
+.km-total.salgspris .val .unit { color: rgba(255, 255, 255, 0.72); }
+
+.km-foot {
+  font-size: 11px;
+  color: var(--neutral-500);
+  margin: 4px 0 0;
+  line-height: 1.45;
+}
+.km-foot strong { color: var(--neutral-800); font-weight: 600; }
 .donut-wrap {
   display: grid;
   grid-template-columns: 160px 1fr;
@@ -1667,13 +1766,13 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
         <div class="field">
           <label for="shiftFrom">Arbeidstid fra</label>
           <div class="input-wrap">
-            <input type="time" id="shiftFrom" value="07:00">
+            <input type="time" id="shiftFrom" value="07:00" lang="nb-NO" step="60">
           </div>
         </div>
         <div class="field">
           <label for="shiftTo">Arbeidstid til</label>
           <div class="input-wrap">
-            <input type="time" id="shiftTo" value="15:00">
+            <input type="time" id="shiftTo" value="15:00" lang="nb-NO" step="60">
           </div>
         </div>
         <div class="field">
@@ -1769,10 +1868,46 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
     </div>
 
     <div class="result-card donut-card">
-      <h3 class="result-card-title">Kostnadsfordeling <span class="pill">Per måned</span></h3>
-      <div class="donut-wrap">
-        <svg id="donutSvg" viewBox="0 0 100 100" aria-hidden="true"></svg>
-        <div class="donut-legend" id="donutLegend"></div>
+      <h3 class="result-card-title">Kostnadsfordeling <span class="pill" id="bdPill">Per dag</span></h3>
+      <div class="seg-toggle seg-mini" id="breakdownToggle" role="tablist" aria-label="Visning av kostnadsfordeling">
+        <button type="button" class="seg active" data-view="donut" role="tab" aria-selected="true">Donut</button>
+        <button type="button" class="seg" data-view="detailed" role="tab" aria-selected="false">Per km</button>
+      </div>
+      <div id="viewDonut" class="bd-view">
+        <div class="donut-wrap">
+          <svg id="donutSvg" viewBox="0 0 100 100" aria-hidden="true"></svg>
+          <div class="donut-legend" id="donutLegend"></div>
+        </div>
+      </div>
+      <div id="viewDetailed" class="bd-view" hidden>
+        <div class="km-grid">
+          <div class="km-tile">
+            <div class="lbl" id="kmFuelLbl">Drivstoff</div>
+            <div class="val">kr <span id="kmFuel">—</span></div>
+            <div class="unit">per km</div>
+          </div>
+          <div class="km-tile">
+            <div class="lbl">Sjåfør</div>
+            <div class="val">kr <span id="kmDriver">—</span></div>
+            <div class="unit">per km</div>
+          </div>
+          <div class="km-tile">
+            <div class="lbl">Faste</div>
+            <div class="val">kr <span id="kmFixed">—</span></div>
+            <div class="unit">per km</div>
+          </div>
+        </div>
+        <div class="km-totals">
+          <div class="km-total selvkost">
+            <div class="lbl">Total selvkost</div>
+            <div class="val"><span>kr <span id="kmSelvkost">—</span></span><span class="unit">per km</span></div>
+          </div>
+          <div class="km-total salgspris">
+            <div class="lbl">Salgspris</div>
+            <div class="val"><span>kr <span id="kmSalgspris">—</span></span><span class="unit">per km</span></div>
+          </div>
+        </div>
+        <p class="km-foot">Basert på <strong><span id="kmBasisKm">—</span> km/dag</strong> og <strong><span id="kmBasisHours">—</span> timer/dag</strong>. Selvkost per km synker når daglig kjørelengde øker.</p>
       </div>
     </div>
 
@@ -1883,8 +2018,12 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
         </dl>
       </div>
       <div class="pblock">
-        <h3>Kostnadsfordeling (salgspris)</h3>
+        <h3>Kostnadsfordeling per dag</h3>
         <dl id="pBreakdown"></dl>
+      </div>
+      <div class="pblock">
+        <h3>Kostnad per kilometer</h3>
+        <dl id="pPerKm"></dl>
       </div>
     </div>
 
@@ -2298,6 +2437,14 @@ function compute() {
   // monthPrice = monthCost + groupMonth + marginMonth (by construction)
   const marginMonth = Math.max(0, monthPrice - monthCost - groupMonth);
 
+  // Per kilometer breakdown
+  const calDaysPerMonth = 365 / 12;
+  const fuelPerKm   = fuelType === 'diesel' ? (lPerMil / 10) * dieselPrice : kwhPerKm * powerPrice;
+  const driverPerKm = kmPerDay > 0 ? (driverHourCost * hpd) / kmPerDay : 0;
+  const fixedPerKm  = kmPerDay > 0 ? fixedIncluded / (kmPerDay * calDaysPerMonth) : 0;
+  const selvkostPerKm = fuelPerKm + driverPerKm + fixedPerKm;
+  const salgsprisPerKm = kmPerDay > 0 ? (hourPrice * hpd) / kmPerDay : 0;
+
   return {
     kmPerDay,
     fuel: fuelType,
@@ -2312,7 +2459,8 @@ function compute() {
     monthCost, hourCost, adjHourCost, hourPrice,
     groupPct, groupFrac, marginPct,
     weekCost, yearCost, weekPrice, monthPrice, yearPrice,
-    groupMonth, marginMonth
+    groupMonth, marginMonth,
+    fuelPerKm, driverPerKm, fixedPerKm, selvkostPerKm, salgsprisPerKm
   };
 }
 
@@ -2324,12 +2472,13 @@ function renderDonut(r) {
   const legend = $('donutLegend');
 
   const energyName = r.fuel === 'diesel' ? 'Diesel' : 'Strøm';
+  const dayDiv = 365 / 12;
   const segments = [
-    { key: 'fixed',  name: 'Faste kostnader',  sub: 'Kapital + andre faste', color: '#8A8780', value: r.fixedIncluded },
-    { key: 'power',  name: energyName,         sub: 'Per måned',             color: '#B5E099', value: r.powerPerMonth },
-    { key: 'driver', name: 'Sjåfør',           sub: 'Lønn + sosiale',        color: '#00643A', value: r.driverMonth },
-    { key: 'group',  name: 'Konsernfelles',    sub: 'Trekk fra salgspris',   color: '#4A1011', value: r.groupMonth },
-    { key: 'margin', name: 'Margin',           sub: 'Fortjeneste',           color: '#E32D22', value: Math.max(0, r.marginMonth) },
+    { key: 'fixed',  name: 'Faste kostnader',  sub: 'Kapital + andre faste', color: '#8A8780', value: r.fixedIncluded / dayDiv },
+    { key: 'power',  name: energyName,         sub: 'Per dag',               color: '#B5E099', value: r.powerPerMonth / dayDiv },
+    { key: 'driver', name: 'Sjåfør',           sub: 'Lønn + sosiale',        color: '#00643A', value: r.driverMonth / dayDiv },
+    { key: 'group',  name: 'Konsernfelles',    sub: 'Trekk fra salgspris',   color: '#4A1011', value: r.groupMonth / dayDiv },
+    { key: 'margin', name: 'Margin',           sub: 'Fortjeneste',           color: '#E32D22', value: Math.max(0, r.marginMonth) / dayDiv },
   ];
 
   const total = segments.reduce((s, x) => s + (x.value > 0 ? x.value : 0), 0);
@@ -2364,8 +2513,8 @@ function renderDonut(r) {
   const centerText = `
     <g class="donut-center">
       <text x="50" y="48" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="6" fill="#6E6E6E" font-weight="500" letter-spacing="0.3">SALGSPRIS</text>
-      <text x="50" y="58" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="10" fill="#111110" font-weight="600">${nf0plain(r.monthPrice)}</text>
-      <text x="50" y="66" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="4.5" fill="#6E6E6E">kr / mnd</text>
+      <text x="50" y="58" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="10" fill="#111110" font-weight="600">${nf0plain(r.monthPrice / dayDiv)}</text>
+      <text x="50" y="66" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="4.5" fill="#6E6E6E">kr / dag</text>
     </g>
   `;
 
@@ -2446,6 +2595,16 @@ function render() {
   // Donut
   const segments = renderDonut(r);
 
+  // Detaljert visning (per km)
+  $('kmFuelLbl').textContent = r.fuel === 'diesel' ? 'Diesel' : 'Strøm';
+  $('kmFuel').textContent     = nf2plain(r.fuelPerKm);
+  $('kmDriver').textContent   = nf2plain(r.driverPerKm);
+  $('kmFixed').textContent    = nf2plain(r.fixedPerKm);
+  $('kmSelvkost').textContent = nf2plain(r.selvkostPerKm);
+  $('kmSalgspris').textContent = nf2plain(r.salgsprisPerKm);
+  $('kmBasisKm').textContent  = nf0plain(r.kmPerDay);
+  $('kmBasisHours').textContent = nf2plain(r.hpd);
+
   // Print
   renderPrint(r, segments);
 }
@@ -2520,12 +2679,25 @@ function renderPrint(r, segments) {
   $('pMargin').textContent = nf2plain(r.marginPct);
   $('pGroupMonth').textContent = nf2plain(r.groupMonth);
 
-  // Breakdown
+  // Breakdown (per dag — segments are already per-day values)
   const total = segments.reduce((s, x) => s + (x.value > 0 ? x.value : 0), 0);
   $('pBreakdown').innerHTML = segments.map(s => {
     const pct = total > 0 ? (s.value / total) * 100 : 0;
-    return `<dt>${escapeHtml(s.name)} (${nf2plain(pct)}%)</dt><dd>${nf0plain(s.value)} kr</dd>`;
+    return `<dt>${escapeHtml(s.name)} (${nf2plain(pct)}%)</dt><dd>${nf2plain(s.value)} kr/dag</dd>`;
   }).join('');
+
+  // Per km
+  const fuelLabel = r.fuel === 'diesel' ? 'Diesel' : 'Strøm';
+  $('pPerKm').innerHTML = [
+    [fuelLabel, r.fuelPerKm],
+    ['Sjåfør', r.driverPerKm],
+    ['Faste kostnader', r.fixedPerKm],
+    ['<strong>Total selvkost</strong>', `<strong>${nf2plain(r.selvkostPerKm)} kr/km</strong>`, true],
+    ['<strong>Veiledende salgspris</strong>', `<strong>${nf2plain(r.salgsprisPerKm)} kr/km</strong>`, true],
+  ].map(row => row[2]
+    ? `<dt>${row[0]}</dt><dd>${row[1]}</dd>`
+    : `<dt>${escapeHtml(row[0])}</dt><dd>${nf2plain(row[1])} kr/km</dd>`
+  ).join('');
 
   $('pHourPrice').textContent = nf2plain(r.hourPrice);
   $('pHourCost').textContent = nf2plain(r.hourCost);
@@ -2755,6 +2927,21 @@ function generateOfferPDF() {
 }
 
 /* ===========================================================
+ * Breakdown view toggle (donut / per km)
+ * =========================================================== */
+function setBreakdownView(view) {
+  const v = view === 'detailed' ? 'detailed' : 'donut';
+  document.querySelectorAll('#breakdownToggle .seg').forEach(btn => {
+    const active = btn.dataset.view === v;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-selected', active ? 'true' : 'false');
+  });
+  $('viewDonut').hidden = v !== 'donut';
+  $('viewDetailed').hidden = v !== 'detailed';
+  $('bdPill').textContent = v === 'detailed' ? 'Per km' : 'Per dag';
+}
+
+/* ===========================================================
  * Fuel toggle
  * =========================================================== */
 function setFuel(fuel) {
@@ -2887,6 +3074,9 @@ function wire() {
   });
   document.querySelectorAll('#fuelToggle .seg').forEach(btn => {
     btn.addEventListener('click', () => { setFuel(btn.dataset.fuel); render(); });
+  });
+  document.querySelectorAll('#breakdownToggle .seg').forEach(btn => {
+    btn.addEventListener('click', () => setBreakdownView(btn.dataset.view));
   });
 
   $('addCostBtn').addEventListener('click', () => { addCustomRow(); render(); });
