@@ -1382,7 +1382,7 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
           <div class="field">
             <label for="powerPrice">Strømpris</label>
             <div class="input-wrap has-suffix">
-              <input type="number" id="powerPrice" min="0" step="0.01" value="1.80">
+              <input type="number" id="powerPrice" min="0" step="0.01" value="3">
               <span class="input-suffix">kr/kWh</span>
             </div>
           </div>
@@ -1432,21 +1432,21 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
         <div class="field">
           <label for="costLeasing">Leasing <span class="sub">· kapital</span></label>
           <div class="input-wrap has-suffix">
-            <input type="number" id="costLeasing" min="0" step="100" value="6500">
+            <input type="number" id="costLeasing" min="0" step="100" value="20000">
             <span class="input-suffix">kr/mnd</span>
           </div>
         </div>
         <div class="field">
           <label for="costInsurance">Forsikring <span class="sub">· kapital</span></label>
           <div class="input-wrap has-suffix">
-            <input type="number" id="costInsurance" min="0" step="50" value="1100">
+            <input type="number" id="costInsurance" min="0" step="50" value="1500">
             <span class="input-suffix">kr/mnd</span>
           </div>
         </div>
         <div class="field">
           <label for="costService">Service / vedlikehold <span class="sub">· kapital</span></label>
           <div class="input-wrap has-suffix">
-            <input type="number" id="costService" min="0" step="50" value="600">
+            <input type="number" id="costService" min="0" step="50" value="1500">
             <span class="input-suffix">kr/mnd</span>
           </div>
         </div>
@@ -1460,21 +1460,21 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
         <div class="field">
           <label for="costTires">Dekk / dekkhotell</label>
           <div class="input-wrap has-suffix">
-            <input type="number" id="costTires" min="0" step="50" value="400">
+            <input type="number" id="costTires" min="0" step="50" value="700">
             <span class="input-suffix">kr/mnd</span>
           </div>
         </div>
         <div class="field">
           <label for="costDamage">Skade / erstatninger</label>
           <div class="input-wrap has-suffix">
-            <input type="number" id="costDamage" min="0" step="50" value="500">
+            <input type="number" id="costDamage" min="0" step="50" value="2000">
             <span class="input-suffix">kr/mnd</span>
           </div>
         </div>
         <div class="field">
           <label for="costToll">Bompenger</label>
           <div class="input-wrap has-suffix">
-            <input type="number" id="costToll" min="0" step="50" value="900">
+            <input type="number" id="costToll" min="0" step="50" value="0">
             <span class="input-suffix">kr/mnd</span>
           </div>
         </div>
@@ -1526,7 +1526,7 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
         <div class="field">
           <label for="grossWage">Bruttolønn</label>
           <div class="input-wrap has-suffix">
-            <input type="number" id="grossWage" min="0" step="1" value="240">
+            <input type="number" id="grossWage" min="0" step="1" value="250">
             <span class="input-suffix">kr/time</span>
           </div>
         </div>
@@ -1608,7 +1608,7 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
         <div class="field">
           <label for="marginPct">Marginpåslag <span class="sub">· på justert selvkost</span></label>
           <div class="input-wrap has-suffix">
-            <input type="number" id="marginPct" min="0" step="0.5" value="15">
+            <input type="number" id="marginPct" min="0" step="0.5" value="0">
             <span class="input-suffix">%</span>
           </div>
         </div>
@@ -1626,7 +1626,7 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
         <span id="rHourPrice">—</span>
         <span class="unit">kr / time</span>
       </div>
-      <div class="sub">Justert selvkost + <span id="rMarginShown">15</span>% margin, etter konsernfellestrekk.</div>
+      <div class="sub">Justert selvkost + <span id="rMarginShown">0</span>% margin, etter konsernfellestrekk.</div>
     </div>
 
     <div class="result-card">
@@ -1957,25 +1957,25 @@ const DEFAULTS = {
   fuel: 'el',
   vehicleType: '0.30',
   kwhOverride: '',
-  powerPrice: 1.80,
+  powerPrice: 3,
   vehicleTypeDiesel: '0.7',
   lPerMilOverride: '',
   dieselPrice: 15,
-  costLeasing: 6500,
-  costInsurance: 1100,
-  costService: 600,
+  costLeasing: 20000,
+  costInsurance: 1500,
+  costService: 1500,
   costOffice: 800,
-  costTires: 400,
-  costDamage: 500,
-  costToll: 900,
+  costTires: 700,
+  costDamage: 2000,
+  costToll: 0,
   capitalPct: 100,
-  grossWage: 240,
+  grossWage: 250,
   socialPct: 36,
   shiftFrom: '07:00',
   shiftTo: '15:00',
   days: [1,2,3,4,5],
   groupPct: 6,
-  marginPct: 15,
+  marginPct: 0,
   custom: []  // [{name, amount}]
 };
 
