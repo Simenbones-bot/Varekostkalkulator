@@ -2,7 +2,7 @@
 <html lang="nb">
 <head>
 <meta charset="utf-8">
-<title>Priskalkulator – Elektrisk varebil</title>
+<title>Priskalkulator – Varebil</title>
 <meta name="viewport" content="width=1280">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -709,6 +709,50 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
 }
 
 /* =========================================================================
+ * Segmented toggle (fuel type)
+ * ========================================================================= */
+.seg-toggle {
+  display: inline-flex;
+  background: var(--neutral-100);
+  border: 1.5px solid var(--neutral-300);
+  border-radius: 12px;
+  padding: 3px;
+  gap: 2px;
+}
+.seg {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--neutral-600);
+  background: transparent;
+  border: none;
+  padding: 9px 22px;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: all 140ms ease-out;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.seg:hover { color: var(--neutral-900); }
+.seg.active {
+  background: var(--neutral-0);
+  color: var(--neutral-900);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 0 0 1px var(--neutral-300);
+}
+.seg .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--neutral-400);
+  flex: none;
+}
+.seg[data-fuel="el"].active .dot { background: var(--bring-green); }
+.seg[data-fuel="diesel"].active .dot { background: var(--neutral-700); }
+
+.fuel-pane[hidden] { display: none; }
+
+/* =========================================================================
  * Toast
  * ========================================================================= */
 .toast {
@@ -923,8 +967,8 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
       </div>
     </div>
     <div class="header-title" style="flex:1; padding: 0 24px;">
-      <h1>Priskalkulator – elektrisk varebil</h1>
-      <p>Regn ut driftskostnad og veiledende timepris for én elbil i tjeneste, eks. mva. Alle felter oppdateres i sanntid.</p>
+      <h1>Priskalkulator – varebil</h1>
+      <p>Regn ut driftskostnad og veiledende timepris for én varebil i tjeneste, eks. mva. Alle felter oppdateres i sanntid.</p>
     </div>
     <div class="header-actions">
       <span class="meta-date" id="metaDate">—</span>
@@ -973,35 +1017,83 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
 
     <section class="section">
       <header class="section-head">
-        <span class="section-num">02 · Strøm</span>
+        <span class="section-num">02 · Drivstoff</span>
       </header>
-      <h2 class="section-title">Energiforbruk</h2>
-      <p class="section-hint">Forbruk regnes ut fra biltype, eller overstyres manuelt.</p>
-      <div class="field-grid field-grid--full">
-        <div class="field">
-          <label for="vehicleType">Biltype</label>
-          <div class="input-wrap">
-            <select id="vehicleType">
-              <option value="0.20">Liten varebil — 0,20 kWh/km</option>
-              <option value="0.30" selected>Stor varebil — 0,30 kWh/km</option>
-              <option value="0.45">Skapbil — 0,45 kWh/km</option>
-            </select>
+      <h2 class="section-title">Energi og forbruk</h2>
+      <p class="section-hint">Velg drivstofftype. Forbruk regnes ut fra biltype, eller overstyres manuelt.</p>
+
+      <div class="field">
+        <label>Drivstofftype</label>
+        <div class="seg-toggle" role="radiogroup" aria-label="Drivstofftype" id="fuelToggle">
+          <button type="button" class="seg active" data-fuel="el" role="radio" aria-checked="true">
+            <span class="dot"></span>Elektrisk
+          </button>
+          <button type="button" class="seg" data-fuel="diesel" role="radio" aria-checked="false">
+            <span class="dot"></span>Diesel
+          </button>
+        </div>
+      </div>
+
+      <!-- Elektrisk -->
+      <div class="fuel-pane" id="paneEl">
+        <div class="field-grid field-grid--full">
+          <div class="field">
+            <label for="vehicleType">Biltype</label>
+            <div class="input-wrap">
+              <select id="vehicleType">
+                <option value="0.20">Liten varebil — 0,20 kWh/km</option>
+                <option value="0.30" selected>Stor varebil — 0,30 kWh/km</option>
+                <option value="0.45">Skapbil — 0,45 kWh/km</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="field-grid">
+          <div class="field">
+            <label for="kwhOverride">Overstyr kWh/km <span class="sub">(valgfritt)</span></label>
+            <div class="input-wrap has-suffix">
+              <input type="number" id="kwhOverride" min="0" step="0.01" placeholder="0,30">
+              <span class="input-suffix">kWh/km</span>
+            </div>
+          </div>
+          <div class="field">
+            <label for="powerPrice">Strømpris</label>
+            <div class="input-wrap has-suffix">
+              <input type="number" id="powerPrice" min="0" step="0.01" value="1.80">
+              <span class="input-suffix">kr/kWh</span>
+            </div>
           </div>
         </div>
       </div>
-      <div class="field-grid">
-        <div class="field">
-          <label for="kwhOverride">Overstyr kWh/km <span class="sub">(valgfritt)</span></label>
-          <div class="input-wrap has-suffix">
-            <input type="number" id="kwhOverride" min="0" step="0.01" placeholder="0,30">
-            <span class="input-suffix">kWh/km</span>
+
+      <!-- Diesel -->
+      <div class="fuel-pane" id="paneDiesel" hidden>
+        <div class="field-grid field-grid--full">
+          <div class="field">
+            <label for="vehicleTypeDiesel">Biltype</label>
+            <div class="input-wrap">
+              <select id="vehicleTypeDiesel">
+                <option value="0.7" selected>Liten varebil — 0,7 l/mil</option>
+                <option value="0.9">Stor varebil — 0,9 l/mil</option>
+                <option value="1.2">Skapbil — 1,2 l/mil</option>
+              </select>
+            </div>
           </div>
         </div>
-        <div class="field">
-          <label for="powerPrice">Strømpris</label>
-          <div class="input-wrap has-suffix">
-            <input type="number" id="powerPrice" min="0" step="0.01" value="1.80">
-            <span class="input-suffix">kr/kWh</span>
+        <div class="field-grid">
+          <div class="field">
+            <label for="lPerMilOverride">Overstyr l/mil <span class="sub">(valgfritt)</span></label>
+            <div class="input-wrap has-suffix">
+              <input type="number" id="lPerMilOverride" min="0" step="0.01" placeholder="0,70">
+              <span class="input-suffix">l/mil</span>
+            </div>
+          </div>
+          <div class="field">
+            <label for="dieselPrice">Dieselpris</label>
+            <div class="input-wrap has-suffix">
+              <input type="number" id="dieselPrice" min="0" step="0.01" value="15">
+              <span class="input-suffix">kr/liter</span>
+            </div>
           </div>
         </div>
       </div>
@@ -1260,7 +1352,7 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
           <div class="val"><span id="rDriverHourCost">—</span> kr</div>
         </div>
         <div class="r">
-          <div class="lbl">Strømkost per måned <span class="meta" id="rPowerMeta">— kWh/km · — kr/kWh</span></div>
+          <div class="lbl"><span id="rPowerLabel">Strømkost per måned</span> <span class="meta" id="rPowerMeta">— kWh/km · — kr/kWh</span></div>
           <div class="val"><span id="rPowerMonth">—</span> kr</div>
         </div>
         <div class="r">
@@ -1288,7 +1380,7 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
   <div class="print-doc">
     <div class="doc-head">
       <div>
-        <h2>Priskalkulator — elektrisk varebil</h2>
+        <h2>Priskalkulator — varebil</h2>
         <div class="sub">Veiledende timeprisestimat · Alle beløp eks. mva</div>
       </div>
       <div class="meta">
@@ -1303,13 +1395,14 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
 
     <div class="doc-grid">
       <div class="pblock">
-        <h3>01–02 · Drift og strøm</h3>
+        <h3 id="pSection12Title">01–02 · Drift og drivstoff</h3>
         <dl>
           <dt>Km per dag</dt><dd><span id="pKm">—</span> km</dd>
+          <dt>Drivstofftype</dt><dd><span id="pFuel">—</span></dd>
           <dt>Biltype</dt><dd><span id="pVehicle">—</span></dd>
-          <dt>Forbruk</dt><dd><span id="pKwh">—</span> kWh/km</dd>
-          <dt>Strømpris</dt><dd><span id="pPower">—</span> kr/kWh</dd>
-          <dt>Strømkostnad / mnd</dt><dd><span id="pPowerMonth">—</span> kr</dd>
+          <dt id="pKwhLabel">Forbruk</dt><dd><span id="pKwh">—</span> <span id="pKwhUnit">kWh/km</span></dd>
+          <dt id="pPowerLabel">Strømpris</dt><dd><span id="pPower">—</span> <span id="pPriceUnit">kr/kWh</span></dd>
+          <dt id="pPowerMonthLabel">Drivstoffkostnad / mnd</dt><dd><span id="pPowerMonth">—</span> kr</dd>
         </dl>
       </div>
       <div class="pblock">
@@ -1374,7 +1467,7 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
 
     <div class="pfoot">
       <strong>Beregningsmetode.</strong> Selvkost per time = (kapital inkludert + andre faste + strøm/mnd + sjåførkost/mnd) ÷ (timer per uke × 52/12). Justert selvkost = selvkost ÷ (1 − konsernfelles%). Timepris = justert selvkost × (1 + margin%).
-      Sjåførkost per time = bruttolønn × (1 + sosiale%). Strømkostnad / mnd = km/dag × kWh/km × kr/kWh × 365/12. Kapitalpotten består av leasing + forsikring + service + kontor/parkering; resten av faste kostnader regnes alltid 100 % inn.
+      Sjåførkost per time = bruttolønn × (1 + sosiale%). Drivstoffkostnad / mnd: for elektrisk = km/dag × kWh/km × kr/kWh × 365/12; for diesel = (km/dag ÷ 10) × l/mil × kr/liter × 365/12. Kapitalpotten består av leasing + forsikring + service + kontor/parkering; resten av faste kostnader regnes alltid 100 % inn.
     </div>
   </div>
 </div>
@@ -1401,7 +1494,13 @@ function num(id) {
   return isFinite(v) ? v : 0;
 }
 
-function vehicleLabel(val) {
+function vehicleLabel(val, fuel) {
+  if (fuel === 'diesel') {
+    if (val === 0.7) return 'Liten varebil';
+    if (val === 0.9) return 'Stor varebil';
+    if (val === 1.2) return 'Skapbil';
+    return 'Egendefinert';
+  }
   if (val === 0.20) return 'Liten varebil';
   if (val === 0.30) return 'Stor varebil';
   if (val === 0.45) return 'Skapbil';
@@ -1413,9 +1512,13 @@ function vehicleLabel(val) {
  * =========================================================== */
 const DEFAULTS = {
   kmPerDay: 120,
+  fuel: 'el',
   vehicleType: '0.30',
   kwhOverride: '',
   powerPrice: 1.80,
+  vehicleTypeDiesel: '0.7',
+  lPerMilOverride: '',
+  dieselPrice: 15,
   costLeasing: 6500,
   costInsurance: 1100,
   costService: 600,
@@ -1435,11 +1538,13 @@ const DEFAULTS = {
 };
 
 const numericInputs = [
-  'kmPerDay','kwhOverride','powerPrice',
+  'kmPerDay','kwhOverride','powerPrice','lPerMilOverride','dieselPrice',
   'costLeasing','costInsurance','costService','costOffice',
   'costTires','costDamage','costToll',
   'grossWage','socialPct','groupPct','marginPct'
 ];
+
+let fuelType = 'el'; // 'el' | 'diesel'
 
 /* ===========================================================
  * Custom cost rows
@@ -1538,11 +1643,20 @@ function hoursPerDay() {
  * =========================================================== */
 function compute() {
   const kmPerDay      = num('kmPerDay');
+
+  // Electric branch (always read so URL/print can show defaults)
   const vehicleType   = parseFloat($('vehicleType').value);
   const kwhOverrideRaw = $('kwhOverride').value.trim();
   const kwhOverride   = kwhOverrideRaw === '' ? null : parseFloat(kwhOverrideRaw.replace(',', '.'));
   const kwhPerKm      = (kwhOverride !== null && isFinite(kwhOverride) && kwhOverride > 0) ? kwhOverride : vehicleType;
   const powerPrice    = num('powerPrice');
+
+  // Diesel branch
+  const vehicleTypeDiesel = parseFloat($('vehicleTypeDiesel').value);
+  const lPerMilOverrideRaw = $('lPerMilOverride').value.trim();
+  const lPerMilOverride = lPerMilOverrideRaw === '' ? null : parseFloat(lPerMilOverrideRaw.replace(',', '.'));
+  const lPerMil       = (lPerMilOverride !== null && isFinite(lPerMilOverride) && lPerMilOverride > 0) ? lPerMilOverride : vehicleTypeDiesel;
+  const dieselPrice   = num('dieselPrice');
 
   const cLeasing   = num('costLeasing');
   const cInsurance = num('costInsurance');
@@ -1577,8 +1691,10 @@ function compute() {
   const driverMonth = driverHourCost * hoursPerMonth;
   const socialKrHour = grossWage * (socialPct / 100);
 
-  // Power
-  const powerPerDay   = kmPerDay * kwhPerKm * powerPrice;
+  // Energy cost (per fuel type). l/mil = liter per 10 km, so km/dag / 10.
+  const elPerDay     = kmPerDay * kwhPerKm * powerPrice;
+  const dieselPerDay = (kmPerDay / 10) * lPerMil * dieselPrice;
+  const powerPerDay   = fuelType === 'diesel' ? dieselPerDay : elPerDay;
   const powerPerMonth = powerPerDay * (365 / 12);
 
   // Total monthly self-cost
@@ -1603,7 +1719,10 @@ function compute() {
   const marginMonth = Math.max(0, monthPrice - monthCost - groupMonth);
 
   return {
-    kmPerDay, vehicleType, kwhPerKm, powerPrice,
+    kmPerDay,
+    fuel: fuelType,
+    vehicleType, kwhPerKm, powerPrice,
+    vehicleTypeDiesel, lPerMil, dieselPrice,
     cLeasing, cInsurance, cService, cOffice, cTires, cDamage, cToll, cCustom,
     capitalPool, otherFixed, capitalPct, capitalIn, capitalOut,
     fixedTotalAll, fixedIncluded,
@@ -1624,9 +1743,10 @@ function renderDonut(r) {
   const svg = $('donutSvg');
   const legend = $('donutLegend');
 
+  const energyName = r.fuel === 'diesel' ? 'Diesel' : 'Strøm';
   const segments = [
     { key: 'fixed',  name: 'Faste kostnader',  sub: 'Kapital + andre faste', color: '#8A8780', value: r.fixedIncluded },
-    { key: 'power',  name: 'Strøm',            sub: 'Per måned',             color: '#B5E099', value: r.powerPerMonth },
+    { key: 'power',  name: energyName,         sub: 'Per måned',             color: '#B5E099', value: r.powerPerMonth },
     { key: 'driver', name: 'Sjåfør',           sub: 'Lønn + sosiale',        color: '#00643A', value: r.driverMonth },
     { key: 'group',  name: 'Konsernfelles',    sub: 'Trekk fra salgspris',   color: '#4A1011', value: r.groupMonth },
     { key: 'margin', name: 'Margin',           sub: 'Fortjeneste',           color: '#E32D22', value: Math.max(0, r.marginMonth) },
@@ -1731,7 +1851,13 @@ function render() {
   $('rAdjHourCost').textContent = nf2plain(r.adjHourCost);
   $('rDriverHourCost').textContent = nf2plain(r.driverHourCost);
   $('rPowerMonth').textContent = nf2plain(r.powerPerMonth);
-  $('rPowerMeta').textContent  = `${nf2plain(r.kwhPerKm)} kWh/km · ${nf2plain(r.powerPrice)} kr/kWh`;
+  if (r.fuel === 'diesel') {
+    $('rPowerLabel').textContent = 'Drivstoffkost per måned';
+    $('rPowerMeta').textContent  = `${nf2plain(r.lPerMil)} l/mil · ${nf2plain(r.dieselPrice)} kr/liter`;
+  } else {
+    $('rPowerLabel').textContent = 'Strømkost per måned';
+    $('rPowerMeta').textContent  = `${nf2plain(r.kwhPerKm)} kWh/km · ${nf2plain(r.powerPrice)} kr/kWh`;
+  }
   $('rFixedMonth').textContent = nf2plain(r.fixedIncluded);
   $('rFixedMeta').textContent  = `Kapital ${nf0plain(r.capitalPct)}% inkludert · andre faste 100%`;
   $('rGroupMonth').textContent = nf2plain(r.groupMonth);
@@ -1749,9 +1875,27 @@ function render() {
  * =========================================================== */
 function renderPrint(r, segments) {
   $('pKm').textContent = nf0plain(r.kmPerDay);
-  $('pVehicle').textContent = vehicleLabel(r.vehicleType);
-  $('pKwh').textContent = nf2plain(r.kwhPerKm);
-  $('pPower').textContent = nf2plain(r.powerPrice);
+  if (r.fuel === 'diesel') {
+    $('pFuel').textContent = 'Diesel';
+    $('pVehicle').textContent = vehicleLabel(r.vehicleTypeDiesel, 'diesel');
+    $('pKwhLabel').textContent = 'Forbruk';
+    $('pKwh').textContent = nf2plain(r.lPerMil);
+    $('pKwhUnit').textContent = 'l/mil';
+    $('pPowerLabel').textContent = 'Dieselpris';
+    $('pPower').textContent = nf2plain(r.dieselPrice);
+    $('pPriceUnit').textContent = 'kr/liter';
+    $('pPowerMonthLabel').textContent = 'Drivstoffkostnad / mnd';
+  } else {
+    $('pFuel').textContent = 'Elektrisk';
+    $('pVehicle').textContent = vehicleLabel(r.vehicleType, 'el');
+    $('pKwhLabel').textContent = 'Forbruk';
+    $('pKwh').textContent = nf2plain(r.kwhPerKm);
+    $('pKwhUnit').textContent = 'kWh/km';
+    $('pPowerLabel').textContent = 'Strømpris';
+    $('pPower').textContent = nf2plain(r.powerPrice);
+    $('pPriceUnit').textContent = 'kr/kWh';
+    $('pPowerMonthLabel').textContent = 'Strømkostnad / mnd';
+  }
   $('pPowerMonth').textContent = nf2plain(r.powerPerMonth);
 
   // Fixed list
@@ -1831,7 +1975,9 @@ function setDate() {
 function serializeToURL() {
   const p = new URLSearchParams();
   numericInputs.forEach(id => p.set(id, $(id).value));
+  p.set('fuel', fuelType);
   p.set('vehicleType', $('vehicleType').value);
+  p.set('vehicleTypeDiesel', $('vehicleTypeDiesel').value);
   p.set('capitalPct', $('capitalPct').value);
   p.set('shiftFrom', $('shiftFrom').value);
   p.set('shiftTo', $('shiftTo').value);
@@ -1847,6 +1993,8 @@ function loadFromURL() {
   if (!p.toString()) return;
   numericInputs.forEach(id => { if (p.has(id)) $(id).value = p.get(id); });
   if (p.has('vehicleType')) $('vehicleType').value = p.get('vehicleType');
+  if (p.has('vehicleTypeDiesel')) $('vehicleTypeDiesel').value = p.get('vehicleTypeDiesel');
+  if (p.has('fuel')) setFuel(p.get('fuel') === 'diesel' ? 'diesel' : 'el');
   if (p.has('capitalPct')) $('capitalPct').value = p.get('capitalPct');
   if (p.has('shiftFrom')) $('shiftFrom').value = p.get('shiftFrom');
   if (p.has('shiftTo')) $('shiftTo').value = p.get('shiftTo');
@@ -1861,6 +2009,20 @@ function loadFromURL() {
       addCustomRow(decodeURIComponent(name || ''), amount || '');
     });
   }
+}
+
+/* ===========================================================
+ * Fuel toggle
+ * =========================================================== */
+function setFuel(fuel) {
+  fuelType = (fuel === 'diesel') ? 'diesel' : 'el';
+  document.querySelectorAll('#fuelToggle .seg').forEach(btn => {
+    const active = btn.dataset.fuel === fuelType;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-checked', active ? 'true' : 'false');
+  });
+  $('paneEl').hidden = fuelType !== 'el';
+  $('paneDiesel').hidden = fuelType !== 'diesel';
 }
 
 /* ===========================================================
@@ -1899,7 +2061,7 @@ function emailLink() {
   const d = new Intl.DateTimeFormat('nb-NO', { day: '2-digit', month: 'long', year: 'numeric' }).format(new Date());
   const subject = `Priskalkulator varebil – ${d}`;
   const body = [
-    `Priskalkulator – elektrisk varebil (${d})`,
+    `Priskalkulator – varebil (${d})`,
     `Alle beløp eks. mva.`,
     ``,
     `Veiledende timepris: ${nf2plain(r.hourPrice)} kr/time`,
@@ -1909,9 +2071,14 @@ function emailLink() {
     ``,
     `— Drift —`,
     `Km per dag: ${nf0plain(r.kmPerDay)}`,
-    `Biltype: ${vehicleLabel(r.vehicleType)} (${nf2plain(r.kwhPerKm)} kWh/km)`,
-    `Strømpris: ${nf2plain(r.powerPrice)} kr/kWh`,
-    `Strømkostnad/mnd: ${nf2plain(r.powerPerMonth)} kr`,
+    `Drivstoff: ${r.fuel === 'diesel' ? 'Diesel' : 'Elektrisk'}`,
+    r.fuel === 'diesel'
+      ? `Biltype: ${vehicleLabel(r.vehicleTypeDiesel, 'diesel')} (${nf2plain(r.lPerMil)} l/mil)`
+      : `Biltype: ${vehicleLabel(r.vehicleType, 'el')} (${nf2plain(r.kwhPerKm)} kWh/km)`,
+    r.fuel === 'diesel'
+      ? `Dieselpris: ${nf2plain(r.dieselPrice)} kr/liter`
+      : `Strømpris: ${nf2plain(r.powerPrice)} kr/kWh`,
+    `Drivstoffkostnad/mnd: ${nf2plain(r.powerPerMonth)} kr`,
     ``,
     `— Sjåfør —`,
     `Bruttolønn: ${nf2plain(r.grossWage)} kr/time`,
@@ -1940,12 +2107,12 @@ function emailLink() {
 function resetAll() {
   if (!confirm('Er du sikker på at du vil nullstille alle felter til standardverdier?')) return;
   for (const [id, val] of Object.entries(DEFAULTS)) {
-    if (id === 'days') continue;
-    if (id === 'custom') continue;
+    if (id === 'days' || id === 'custom' || id === 'fuel') continue;
     const el = $(id);
     if (el) el.value = val;
   }
   setDays(DEFAULTS.days);
+  setFuel(DEFAULTS.fuel);
   customRows = [];
   renderCustomRows();
   history.replaceState(null, '', location.pathname);
@@ -1959,7 +2126,7 @@ function resetAll() {
 function wire() {
   const ids = [
     ...numericInputs,
-    'vehicleType','capitalPct','shiftFrom','shiftTo'
+    'vehicleType','vehicleTypeDiesel','capitalPct','shiftFrom','shiftTo'
   ];
   ids.forEach(id => {
     const el = $(id);
@@ -1969,6 +2136,9 @@ function wire() {
   });
   document.querySelectorAll('#weekdays input').forEach(c => {
     c.addEventListener('change', render);
+  });
+  document.querySelectorAll('#fuelToggle .seg').forEach(btn => {
+    btn.addEventListener('click', () => { setFuel(btn.dataset.fuel); render(); });
   });
 
   $('addCostBtn').addEventListener('click', () => { addCustomRow(); render(); });
