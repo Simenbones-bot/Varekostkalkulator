@@ -863,6 +863,29 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
   font-weight: 500;
 }
 .modal-body .modal-error[hidden] { display: none; }
+.modal-body label.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--neutral-800);
+  font-weight: 500;
+  padding: 4px 0;
+}
+.modal-body label.checkbox-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--bring-green-deep);
+  cursor: pointer;
+  margin: 0;
+}
+.modal-body .field-hint {
+  font-size: 11px;
+  color: var(--neutral-600);
+  margin: 4px 0 0;
+  line-height: 1.4;
+}
 .modal-foot {
   padding: 14px 24px 20px;
   border-top: 1px solid var(--neutral-200);
@@ -1244,6 +1267,52 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
   color: var(--neutral-900);
 }
 .customer-doc .incl-list li svg { flex: none; }
+.customer-doc .addon-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.customer-doc .addon-list li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 14px;
+  background: var(--neutral-100);
+  border-left: 3px solid var(--posten-red);
+  border-radius: 0 8px 8px 0;
+}
+.customer-doc .addon-list li svg { flex: none; align-self: center; }
+.customer-doc .addon-list li .nm {
+  font-size: 11pt;
+  color: var(--neutral-900);
+  font-weight: 500;
+  line-height: 1.25;
+}
+.customer-doc .addon-list li .nm .meta {
+  display: block;
+  font-size: 9pt;
+  color: var(--neutral-600);
+  font-weight: 400;
+  margin-top: 3px;
+}
+.customer-doc .addon-list li .price {
+  font-size: 11pt;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--posten-burgundy);
+  text-align: right;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+.customer-doc .addon-list li.note-only .price {
+  font-weight: 500;
+  color: var(--neutral-700);
+  font-style: italic;
+}
 .customer-doc .notes-block[hidden] { display: none; }
 .customer-doc .notes-block p {
   font-size: 11pt;
@@ -1847,6 +1916,11 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
       </div>
     </div>
 
+    <div class="customer-section" id="cAddonsWrap" hidden>
+      <h3>Tilleggspriser</h3>
+      <ul class="addon-list" id="cAddons"></ul>
+    </div>
+
     <div class="customer-section">
       <h3>Inkludert i prisen</h3>
       <ul class="incl-list" id="cIncluded"></ul>
@@ -1901,6 +1975,17 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
       <div class="field">
         <label for="offerNotes">Tilleggsinformasjon / kommentarer <span class="sub">(valgfritt)</span></label>
         <textarea id="offerNotes" placeholder="Eventuelle merknader som vises på tilbudet …"></textarea>
+      </div>
+      <div class="field">
+        <label for="offerExtraKm">Pris per overkjørt km <span class="sub">(kr)</span></label>
+        <input type="number" id="offerExtraKm" min="0" step="0.5" value="5">
+        <p class="field-hint">Pris kunden betaler per km utover avtalt kjørelengde.</p>
+      </div>
+      <div class="field">
+        <label class="checkbox-row" for="offerTollSep">
+          <input type="checkbox" id="offerTollSep" checked>
+          <span>Bompenger faktureres separat utenom timeprisen</span>
+        </label>
       </div>
       <div class="modal-error" id="offerError" hidden></div>
     </div>
@@ -2485,6 +2570,8 @@ function openOfferModal() {
   $('offerNotes').value = '';
   $('offerNummer').value = generateOfferNumber();
   $('offerDato').value = todayISO();
+  $('offerExtraKm').value = '5';
+  $('offerTollSep').checked = true;
   $('offerError').hidden = true;
   $('offerError').textContent = '';
   $('offerModal').hidden = false;
@@ -2525,11 +2612,43 @@ function renderCustomerDoc() {
   $('cHourPrice').textContent = nf2plain(r.hourPrice);
   $('cDayPrice').textContent = nf2plain(r.hourPrice * hpd);
 
+  const tollSeparate = $('offerTollSep').checked;
+  const extraKmRaw = $('offerExtraKm').value.trim().replace(',', '.');
+  const extraKmPrice = extraKmRaw === '' ? 0 : parseFloat(extraKmRaw);
+  const hasExtraKm = isFinite(extraKmPrice) && extraKmPrice > 0;
+
   const fuelItem = r.fuel === 'diesel' ? 'Diesel' : 'Strøm';
   const items = ['Varebil', 'Sjåfør', fuelItem, 'Forsikring', 'Service og vedlikehold', 'Dekk og dekkhotell'];
-  if (r.cToll > 0) items.push('Bompenger');
+  if (!tollSeparate && r.cToll > 0) items.push('Bompenger');
   const check = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#00643A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
   $('cIncluded').innerHTML = items.map(t => `<li>${check}<span>${escapeHtml(t)}</span></li>`).join('');
+
+  // Tilleggspriser (kommer utover hovedprisen)
+  const plus = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#E32D22" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+  const addonRows = [];
+  if (hasExtraKm) {
+    addonRows.push(
+      `<li>${plus}` +
+      `<span class="nm">Overkjørte kilometer` +
+      `<span class="meta">Beregnes på kilometer utover avtalt kjørelengde per dag (${nf0plain(r.kmPerDay)} km/dag).</span>` +
+      `</span>` +
+      `<span class="price">kr ${nf2plain(extraKmPrice)} per km</span></li>`
+    );
+  }
+  if (tollSeparate) {
+    addonRows.push(
+      `<li class="note-only">${plus}` +
+      `<span class="nm">Bompenger</span>` +
+      `<span class="price">Faktureres separat etter forbruk</span></li>`
+    );
+  }
+  if (addonRows.length) {
+    $('cAddons').innerHTML = addonRows.join('');
+    $('cAddonsWrap').hidden = false;
+  } else {
+    $('cAddons').innerHTML = '';
+    $('cAddonsWrap').hidden = true;
+  }
 
   if (notes) {
     $('cNotes').textContent = notes;
