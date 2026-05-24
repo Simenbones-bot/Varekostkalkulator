@@ -546,6 +546,42 @@ input[type="range"]::-moz-range-thumb {
 .driver-stat .l { font-size: 11px; color: var(--neutral-600); margin-bottom: 3px; line-height: 1.3; }
 .driver-stat .v { font-size: 14px; font-weight: 600; color: var(--neutral-900); font-variant-numeric: tabular-nums; }
 
+.lunch-note {
+  font-size: 12px;
+  color: var(--neutral-700);
+  background: var(--neutral-100);
+  border-left: 2px solid var(--brand);
+  padding: 9px 12px;
+  border-radius: 0 8px 8px 0;
+  margin: 0;
+  line-height: 1.5;
+}
+.lunch-note strong { color: var(--neutral-900); font-weight: 600; }
+.lunch-note .badge {
+  display: inline-block;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 999px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+.lunch-note.lunch-off { border-left-color: var(--neutral-400); }
+.lunch-note.lunch-off .badge { background: var(--neutral-200); color: var(--neutral-600); }
+
+.card-foot {
+  font-size: 11px;
+  color: var(--neutral-500);
+  margin: 6px 0 0;
+  line-height: 1.45;
+  border-top: 1px solid var(--neutral-200);
+  padding-top: 10px;
+}
+
 /* =========================================================================
  * Results panel
  * ========================================================================= */
@@ -1736,7 +1772,7 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
         <span class="section-num">05 · Sjåfør og arbeidstid</span>
       </header>
       <h2 class="section-title">Lønn og arbeidsuke</h2>
-      <p class="section-hint">Bruttolønn, sosiale kostnader og hvilke timer bilen er bemannet.</p>
+      <p class="section-hint">Bruttolønn, sosiale kostnader og hvilke timer bilen er bemannet. <strong>Lunsj (30 min) trekkes fra lønn ved vakter over 5,5 timer — fakturerbare timer påvirkes ikke.</strong></p>
 
       <div class="field-grid field-grid--3">
         <div class="field">
@@ -1783,6 +1819,8 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
           </div>
         </div>
       </div>
+
+      <p class="lunch-note" id="lunchNote">—</p>
 
       <div class="field">
         <label>Ukedager bilen er i drift</label>
@@ -1853,18 +1891,19 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
           <div class="val"><span id="rHourPrice2">—</span> kr</div>
         </div>
         <div class="r">
-          <div class="lbl">Per uke <span class="meta" id="rHoursWeekMeta">— timer/uke</span></div>
+          <div class="lbl">Per dag <span class="meta" id="rDayMeta">— fakturerbare t/dag</span></div>
+          <div class="val"><span id="rDayPrice">—</span> kr</div>
+        </div>
+        <div class="r">
+          <div class="lbl">Per uke <span class="meta">5 virkedager</span></div>
           <div class="val"><span id="rWeekPrice">—</span> kr</div>
         </div>
         <div class="r">
-          <div class="lbl">Per måned <span class="meta" id="rHoursMonthMeta">— timer/mnd</span></div>
+          <div class="lbl">Per måned <span class="meta">21 virkedager (snitt)</span></div>
           <div class="val"><span id="rMonthPrice">—</span> kr</div>
         </div>
-        <div class="r">
-          <div class="lbl">Per år</div>
-          <div class="val"><span id="rYearPrice">—</span> kr</div>
-        </div>
       </div>
+      <p class="card-foot">Uke = 5 virkedager · måned = 21 virkedager (snitt). Faktisk fakturering kan avvike.</p>
     </div>
 
     <div class="result-card donut-card">
@@ -2006,6 +2045,8 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
           <dt>Timer per uke</dt><dd><span id="pHoursWeek">—</span> t</dd>
           <dt>Timer per måned</dt><dd><span id="pHoursMonth">—</span> t</dd>
           <dt>Sjåførkost per time</dt><dd><span id="pDriverHour">—</span> kr</dd>
+          <dt>Lunsj fra lønn</dt><dd><span id="pLunch">—</span></dd>
+          <dt>Lønnstimer per dag</dt><dd><span id="pPaidHpd">—</span> t</dd>
           <dt><strong>Sjåførkost / mnd</strong></dt><dd><strong><span id="pDriverMonth">—</span> kr</strong></dd>
         </dl>
       </div>
@@ -2403,11 +2444,22 @@ function compute() {
 
   const hpd = hoursPerDay();
   const days = getDays();
-  const hoursPerWeek = hpd * days.length;
-  const hoursPerMonth = hoursPerWeek * (52 / 12);
-  const hoursPerYear  = hoursPerWeek * 52;
 
-  const driverMonth = driverHourCost * hoursPerMonth;
+  // Lunsj: 30 min trekkes fra lønn ved vakter over 5,5 t
+  // Fakturerbare timer påvirkes IKKE.
+  const lunchEligible = hpd > 5.5;
+  const lunchDeduct = lunchEligible ? 0.5 : 0;
+  const paidHpd = Math.max(0, hpd - lunchDeduct);
+
+  const hoursPerWeek = hpd * days.length;                // fakturerbare
+  const hoursPerMonth = hoursPerWeek * (52 / 12);        // fakturerbare
+  const hoursPerYear  = hoursPerWeek * 52;
+  const paidHoursPerWeek  = paidHpd * days.length;       // lønnsgrunnlag
+  const paidHoursPerMonth = paidHoursPerWeek * (52 / 12);
+
+  // Sjåførkost: bruker LØNNSTIMER
+  const driverMonth = driverHourCost * paidHoursPerMonth;
+  const driverDay   = driverHourCost * paidHpd;
   const socialKrHour = grossWage * (socialPct / 100);
 
   // Energy cost (per fuel type). l/mil = liter per 10 km, so km/dag / 10.
@@ -2437,13 +2489,18 @@ function compute() {
   // monthPrice = monthCost + groupMonth + marginMonth (by construction)
   const marginMonth = Math.max(0, monthPrice - monthCost - groupMonth);
 
-  // Per kilometer breakdown
+  // Per kilometer breakdown — sjåfør bruker lønnstimer
   const calDaysPerMonth = 365 / 12;
   const fuelPerKm   = fuelType === 'diesel' ? (lPerMil / 10) * dieselPrice : kwhPerKm * powerPrice;
-  const driverPerKm = kmPerDay > 0 ? (driverHourCost * hpd) / kmPerDay : 0;
+  const driverPerKm = kmPerDay > 0 ? (driverHourCost * paidHpd) / kmPerDay : 0;
   const fixedPerKm  = kmPerDay > 0 ? fixedIncluded / (kmPerDay * calDaysPerMonth) : 0;
   const selvkostPerKm = fuelPerKm + driverPerKm + fixedPerKm;
   const salgsprisPerKm = kmPerDay > 0 ? (hourPrice * hpd) / kmPerDay : 0;
+
+  // Forenklet salgspris (display): bruker FAKTURERBARE timer × 5/21 virkedager
+  const dayPriceSimple   = hourPrice * hpd;
+  const weekPriceSimple  = dayPriceSimple * 5;
+  const monthPriceSimple = dayPriceSimple * 21;
 
   return {
     kmPerDay,
@@ -2453,14 +2510,17 @@ function compute() {
     cLeasing, cInsurance, cService, cOffice, cTires, cDamage, cToll, cCustom,
     capitalPool, otherFixed, capitalPct, capitalIn, capitalOut,
     fixedTotalAll, fixedIncluded,
-    grossWage, socialPct, driverHourCost, socialKrHour, driverMonth,
-    hpd, days, hoursPerWeek, hoursPerMonth, hoursPerYear,
+    grossWage, socialPct, driverHourCost, socialKrHour, driverMonth, driverDay,
+    hpd, paidHpd, lunchDeduct, lunchEligible,
+    days, hoursPerWeek, hoursPerMonth, hoursPerYear,
+    paidHoursPerWeek, paidHoursPerMonth,
     powerPerDay, powerPerMonth,
     monthCost, hourCost, adjHourCost, hourPrice,
     groupPct, groupFrac, marginPct,
     weekCost, yearCost, weekPrice, monthPrice, yearPrice,
     groupMonth, marginMonth,
-    fuelPerKm, driverPerKm, fixedPerKm, selvkostPerKm, salgsprisPerKm
+    fuelPerKm, driverPerKm, fixedPerKm, selvkostPerKm, salgsprisPerKm,
+    dayPriceSimple, weekPriceSimple, monthPriceSimple
   };
 }
 
@@ -2567,13 +2627,28 @@ function render() {
   $('rHourPrice').textContent  = nf2plain(r.hourPrice);
   $('rMarginShown').textContent = nf0plain(r.marginPct);
 
-  // Sales price card
+  // Sales price card — forenklet: time / dag / uke (5vd) / måned (21vd)
   $('rHourPrice2').textContent = nf2plain(r.hourPrice);
-  $('rWeekPrice').textContent  = nf2plain(r.weekPrice);
-  $('rMonthPrice').textContent = nf2plain(r.monthPrice);
-  $('rYearPrice').textContent  = nf2plain(r.yearPrice);
-  $('rHoursWeekMeta').textContent  = `${nf2plain(r.hoursPerWeek)} timer/uke`;
-  $('rHoursMonthMeta').textContent = `${nf2plain(r.hoursPerMonth)} timer/mnd`;
+  $('rDayPrice').textContent   = nf2plain(r.dayPriceSimple);
+  $('rWeekPrice').textContent  = nf2plain(r.weekPriceSimple);
+  $('rMonthPrice').textContent = nf2plain(r.monthPriceSimple);
+  $('rDayMeta').textContent    = `${nf2plain(r.hpd)} fakturerbare t/dag`;
+
+  // Lunsj-info under arbeidstid
+  const ln = $('lunchNote');
+  if (r.lunchEligible) {
+    ln.classList.remove('lunch-off');
+    ln.innerHTML =
+      `<span class="badge">Lunsj 30 min</span>` +
+      `Lunsj trekkes fra lønn ved vakter over 5,5 t. ` +
+      `Lønnstimer: <strong>${nf2plain(r.paidHpd)} t/dag</strong> · ` +
+      `Fakturerbare timer: <strong>${nf2plain(r.hpd)} t/dag</strong>.`;
+  } else {
+    ln.classList.add('lunch-off');
+    ln.innerHTML =
+      `<span class="badge">Ingen lunsjtrekk</span>` +
+      `Vakt under 5,5 t — full betaling for <strong>${nf2plain(r.hpd)} t/dag</strong>.`;
+  }
 
   // Self-cost & details
   $('rHourCost').textContent = nf2plain(r.hourCost);
@@ -2673,6 +2748,8 @@ function renderPrint(r, segments) {
   $('pHoursWeek').textContent = nf2plain(r.hoursPerWeek);
   $('pHoursMonth').textContent = nf2plain(r.hoursPerMonth);
   $('pDriverHour').textContent = nf2plain(r.driverHourCost);
+  $('pLunch').textContent = r.lunchEligible ? '30 min/dag (vakt > 5,5 t)' : 'Ingen trekk (vakt ≤ 5,5 t)';
+  $('pPaidHpd').textContent = nf2plain(r.paidHpd);
   $('pDriverMonth').textContent = nf0plain(r.driverMonth);
 
   $('pGroup').textContent = nf2plain(r.groupPct);
