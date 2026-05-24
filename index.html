@@ -756,6 +756,132 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
 .fuel-pane[hidden] { display: none; }
 
 /* =========================================================================
+ * Modal (kundetilbud)
+ * ========================================================================= */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 17, 16, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 24px;
+  animation: backdrop-in 160ms ease-out;
+}
+.modal-backdrop[hidden] { display: none; }
+@keyframes backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modal-in { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
+.modal {
+  background: var(--neutral-0);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 540px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.32);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 48px);
+  animation: modal-in 200ms ease-out;
+}
+.modal-head {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--neutral-200);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.modal-head h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--headline);
+  letter-spacing: -0.01em;
+}
+.modal-close {
+  background: transparent;
+  border: none;
+  color: var(--neutral-600);
+  font-size: 22px;
+  cursor: pointer;
+  line-height: 1;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 120ms ease-out;
+}
+.modal-close:hover { background: var(--neutral-100); color: var(--neutral-900); }
+.modal-body {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+}
+.modal-body .grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.modal-body input[type="text"],
+.modal-body input[type="date"],
+.modal-body textarea {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--neutral-900);
+  background: var(--neutral-0);
+  border: 1.5px solid var(--neutral-300);
+  border-radius: 10px;
+  padding: 10px 12px;
+  width: 100%;
+  transition: border-color 120ms ease-out, box-shadow 120ms ease-out;
+}
+.modal-body input:focus,
+.modal-body textarea:focus {
+  outline: none;
+  border-color: var(--neutral-900);
+  box-shadow: 0 0 0 3px rgba(27, 93, 239, 0.18);
+}
+.modal-body textarea {
+  resize: vertical;
+  min-height: 84px;
+  font-weight: 400;
+}
+.modal-body .modal-error {
+  color: var(--status-error);
+  font-size: 13px;
+  padding: 9px 12px;
+  background: rgba(199, 38, 27, 0.08);
+  border-left: 2px solid var(--status-error);
+  border-radius: 0 8px 8px 0;
+  font-weight: 500;
+}
+.modal-body .modal-error[hidden] { display: none; }
+.modal-foot {
+  padding: 14px 24px 20px;
+  border-top: 1px solid var(--neutral-200);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  background: var(--neutral-50);
+}
+
+/* Accent button (primary CTA for kundetilbud) */
+.btn-accent {
+  background: var(--posten-red);
+  color: var(--neutral-0);
+  font-weight: 600;
+}
+.btn-accent:hover { background: var(--posten-red-deep); }
+.btn-accent:active { transform: scale(0.98); }
+
+/* =========================================================================
  * Toast
  * ========================================================================= */
 .toast {
@@ -815,8 +941,15 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
   .sections { display: none !important; }
   aside.results { display: none !important; }
   .footer-note { display: none !important; }
-  .btn, .print-cta, .toast { display: none !important; }
-  .print-only { display: block !important; }
+  .btn, .print-cta, .toast, .modal-backdrop { display: none !important; }
+  .brand-gradient { display: none !important; }
+
+  /* Default: show internal version */
+  body:not(.print-customer) .print-only.internal { display: block !important; }
+  body:not(.print-customer) .print-only.customer { display: none !important; }
+  /* Customer offer mode */
+  body.print-customer .print-only.internal { display: none !important; }
+  body.print-customer .print-only.customer { display: block !important; }
 }
 
 /* =========================================================================
@@ -955,6 +1088,195 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
   background: linear-gradient(90deg, #E32D22 0%, #FFFFFF 50%, #56B529 100%);
   margin: 18px 0 10px;
 }
+
+/* =========================================================================
+ * Customer offer print
+ * ========================================================================= */
+.customer-doc {
+  font-family: var(--font-sans);
+  color: #111;
+}
+.customer-doc .brand-stripe {
+  height: 5px;
+  background: linear-gradient(90deg, #E32D22 0%, #FFFFFF 50%, #56B529 100%);
+}
+.customer-doc .customer-titlebar {
+  padding: 24px 0 22px;
+  border-bottom: 2px solid var(--posten-burgundy);
+  margin-bottom: 28px;
+}
+.customer-doc .customer-titlebar h1 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 28pt;
+  color: var(--posten-burgundy);
+  margin: 0 0 6px;
+  letter-spacing: -0.015em;
+  line-height: 1.05;
+}
+.customer-doc .customer-titlebar p {
+  font-size: 11pt;
+  color: var(--neutral-600);
+  margin: 0;
+}
+.customer-doc .customer-info {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 32px;
+  margin-bottom: 30px;
+  align-items: start;
+}
+.customer-doc .customer-info .lbl {
+  font-size: 8pt;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  color: var(--neutral-500);
+  display: block;
+  margin-bottom: 4px;
+}
+.customer-doc .customer-info .company {
+  font-family: var(--font-display);
+  font-size: 17pt;
+  font-weight: 500;
+  color: var(--neutral-900);
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+.customer-doc .customer-info .contact {
+  font-size: 11pt;
+  color: var(--neutral-700);
+  margin-top: 6px;
+}
+.customer-doc .customer-info .contact[hidden] { display: none; }
+.customer-doc .customer-info .right {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.customer-doc .customer-info .right .meta-row .v {
+  font-size: 12pt;
+  font-weight: 600;
+  color: var(--neutral-900);
+  font-variant-numeric: tabular-nums;
+  margin-top: 2px;
+}
+.customer-doc .customer-section { margin-bottom: 24px; }
+.customer-doc .customer-section h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 9.5pt;
+  color: var(--posten-burgundy);
+  margin: 0 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--neutral-300);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.customer-doc .basis-list {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto;
+  row-gap: 7px;
+  column-gap: 24px;
+  font-size: 11pt;
+}
+.customer-doc .basis-list dt { color: var(--neutral-700); }
+.customer-doc .basis-list dd {
+  margin: 0;
+  text-align: right;
+  font-weight: 600;
+  color: var(--neutral-900);
+  font-variant-numeric: tabular-nums;
+}
+.customer-doc .prices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin: 8px 0 32px;
+}
+.customer-doc .price-box {
+  background: var(--neutral-100);
+  border: 1.5px solid var(--posten-burgundy);
+  border-radius: 10px;
+  padding: 22px 24px 20px;
+}
+.customer-doc .price-box .label {
+  display: block;
+  font-size: 9pt;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--posten-burgundy);
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.customer-doc .price-box .value {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 30pt;
+  color: var(--posten-burgundy);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  display: block;
+  line-height: 1;
+}
+.customer-doc .price-box .unit {
+  display: block;
+  font-size: 9pt;
+  color: var(--neutral-600);
+  margin-top: 10px;
+}
+.customer-doc .incl-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 32px;
+}
+.customer-doc .incl-list li {
+  font-size: 11pt;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 3px 0;
+  color: var(--neutral-900);
+}
+.customer-doc .incl-list li svg { flex: none; }
+.customer-doc .notes-block[hidden] { display: none; }
+.customer-doc .notes-block p {
+  font-size: 11pt;
+  color: var(--neutral-800);
+  white-space: pre-wrap;
+  line-height: 1.55;
+  margin: 0;
+}
+.customer-doc .validity {
+  background: var(--brand-soft);
+  border-radius: 10px;
+  padding: 14px 20px;
+  font-size: 10.5pt;
+  color: var(--neutral-800);
+  text-align: center;
+  margin-bottom: 28px;
+}
+.customer-doc .validity strong {
+  color: var(--posten-burgundy);
+  font-weight: 600;
+}
+.customer-doc .customer-foot {
+  margin-top: 28px;
+  padding-top: 12px;
+  border-top: 1px solid var(--neutral-300);
+}
+.customer-doc .customer-foot p {
+  font-size: 8.5pt;
+  color: var(--neutral-600);
+  text-align: center;
+  margin: 8px 0 0;
+  font-style: italic;
+}
 </style>
 </head>
 <body>
@@ -985,6 +1307,10 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
         <button class="btn btn-primary" id="printBtn" type="button">
           <svg class="icn" viewBox="0 0 24 24"><path d="M6 9V3h12v6"/><rect x="6" y="14" width="12" height="7"/><path d="M6 18H3v-7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v7h-3"/></svg>
           Skriv ut / PDF
+        </button>
+        <button class="btn btn-accent" id="offerBtn" type="button" title="Last ned kundetilbud som PDF">
+          <svg class="icn" viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="14 3 14 9 20 9"/><line x1="9" y1="14" x2="15" y2="14"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+          Last ned kundetilbud
         </button>
       </div>
     </div>
@@ -1371,9 +1697,9 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
 </div>
 
 <!-- ===========================================================
-     PRINT-ONLY DOCUMENT
+     PRINT-ONLY DOCUMENT (intern)
      =========================================================== -->
-<div class="print-only">
+<div class="print-only internal">
   <div class="print-doc">
     <div class="doc-head">
       <div>
@@ -1465,6 +1791,125 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
     <div class="pfoot">
       <strong>Beregningsmetode.</strong> Selvkost per time = (kapital inkludert + andre faste + strøm/mnd + sjåførkost/mnd) ÷ (timer per uke × 52/12). Justert selvkost = selvkost ÷ (1 − konsernfelles%). Timepris = justert selvkost × (1 + margin%).
       Sjåførkost per time = bruttolønn × (1 + sosiale%). Drivstoffkostnad / mnd: for elektrisk = km/dag × kWh/km × kr/kWh × 365/12; for diesel = (km/dag ÷ 10) × l/mil × kr/liter × 365/12. Kapitalpotten består av leasing + forsikring + service + kontor/parkering; resten av faste kostnader regnes alltid 100 % inn.
+    </div>
+  </div>
+</div>
+
+<!-- ===========================================================
+     PRINT-ONLY DOCUMENT (kundetilbud)
+     =========================================================== -->
+<div class="print-only customer">
+  <div class="customer-doc">
+    <div class="brand-stripe"></div>
+    <div class="customer-titlebar">
+      <h1>Tilbud — Varebil i tjeneste</h1>
+      <p>Veiledende priser, eks. mva</p>
+    </div>
+
+    <div class="customer-info">
+      <div>
+        <span class="lbl">Kunde</span>
+        <div class="company" id="cFirma">—</div>
+        <div class="contact" id="cKontakt" hidden></div>
+      </div>
+      <div class="right">
+        <div class="meta-row">
+          <span class="lbl">Tilbudsnummer</span>
+          <div class="v" id="cNummer">—</div>
+        </div>
+        <div class="meta-row">
+          <span class="lbl">Dato</span>
+          <div class="v" id="cDato">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="customer-section">
+      <h3>Grunnlag for tilbudet</h3>
+      <dl class="basis-list">
+        <dt>Timer per dag</dt><dd><span id="cHoursPerDay">—</span> t</dd>
+        <dt>Kjørelengde per dag</dt><dd><span id="cKm">—</span> km</dd>
+        <dt>Ukedager i drift</dt><dd><span id="cDays">—</span></dd>
+        <dt>Timer per uke</dt><dd><span id="cHoursPerWeek">—</span> t</dd>
+      </dl>
+    </div>
+
+    <div class="prices">
+      <div class="price-box">
+        <span class="label">Timepris</span>
+        <span class="value"><span id="cHourPrice">—</span> kr</span>
+        <span class="unit">per time · eks. mva</span>
+      </div>
+      <div class="price-box">
+        <span class="label">Dagspris</span>
+        <span class="value"><span id="cDayPrice">—</span> kr</span>
+        <span class="unit">per arbeidsdag · eks. mva</span>
+      </div>
+    </div>
+
+    <div class="customer-section">
+      <h3>Inkludert i prisen</h3>
+      <ul class="incl-list" id="cIncluded"></ul>
+    </div>
+
+    <div class="customer-section notes-block" id="cNotesWrap" hidden>
+      <h3>Merknader</h3>
+      <p id="cNotes"></p>
+    </div>
+
+    <div class="validity">
+      Tilbudet er gyldig i 30 dager fra <strong id="cValidFrom">—</strong> · gyldig til og med <strong id="cValidTo">—</strong>.
+    </div>
+
+    <div class="customer-foot">
+      <div class="brand-stripe"></div>
+      <p>Alle priser oppgitt eks. mva. Endelig pris fastsettes ved avtaleinngåelse.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===========================================================
+     MODAL: Kundetilbud
+     =========================================================== -->
+<div class="modal-backdrop" id="offerModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="offerModalTitle">
+    <div class="modal-head">
+      <h2 id="offerModalTitle">Kundetilbud</h2>
+      <button type="button" class="modal-close" id="offerClose" aria-label="Lukk">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label for="offerFirma">Firmanavn <span class="sub" style="color:var(--status-error)">(obligatorisk)</span></label>
+        <input type="text" id="offerFirma" autocomplete="organization" placeholder="F.eks. Bedrift AS">
+      </div>
+      <div class="field">
+        <label for="offerKontakt">Kontaktperson <span class="sub">(valgfritt)</span></label>
+        <input type="text" id="offerKontakt" autocomplete="name" placeholder="F.eks. Ola Nordmann">
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label for="offerNummer">Tilbudsnummer</label>
+          <input type="text" id="offerNummer" placeholder="TB-YYYY-XXXX">
+        </div>
+        <div class="field">
+          <label for="offerDato">Dato</label>
+          <input type="date" id="offerDato">
+        </div>
+      </div>
+      <div class="field">
+        <label for="offerNotes">Tilleggsinformasjon / kommentarer <span class="sub">(valgfritt)</span></label>
+        <textarea id="offerNotes" placeholder="Eventuelle merknader som vises på tilbudet …"></textarea>
+      </div>
+      <div class="modal-error" id="offerError" hidden></div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-ghost" id="offerCancel">Avbryt</button>
+      <button type="button" class="btn btn-accent" id="offerGenerate">
+        <svg class="icn" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Generer PDF
+      </button>
     </div>
   </div>
 </div>
@@ -2009,6 +2454,124 @@ function loadFromURL() {
 }
 
 /* ===========================================================
+ * Customer offer modal + print
+ * =========================================================== */
+function generateOfferNumber() {
+  const d = new Date();
+  const year = d.getFullYear();
+  const sec = d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
+  const num = String((sec + Math.floor(Math.random() * 10)) % 10000).padStart(4, '0');
+  return `TB-${year}-${num}`;
+}
+
+function todayISO() {
+  const d = new Date();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${d.getFullYear()}-${m}-${day}`;
+}
+
+function fmtDateLong(d) {
+  return new Intl.DateTimeFormat('nb-NO', { day: '2-digit', month: 'long', year: 'numeric' }).format(d);
+}
+
+function escOfferHandler(e) {
+  if (e.key === 'Escape') closeOfferModal();
+}
+
+function openOfferModal() {
+  $('offerFirma').value = '';
+  $('offerKontakt').value = '';
+  $('offerNotes').value = '';
+  $('offerNummer').value = generateOfferNumber();
+  $('offerDato').value = todayISO();
+  $('offerError').hidden = true;
+  $('offerError').textContent = '';
+  $('offerModal').hidden = false;
+  document.addEventListener('keydown', escOfferHandler);
+  setTimeout(() => $('offerFirma').focus(), 60);
+}
+
+function closeOfferModal() {
+  $('offerModal').hidden = true;
+  document.removeEventListener('keydown', escOfferHandler);
+}
+
+function renderCustomerDoc() {
+  const r = compute();
+  const hpd = hoursPerDay();
+  const days = getDays();
+  const dayNames = ['','Man','Tir','Ons','Tor','Fre','Lør','Søn'];
+
+  const firma = $('offerFirma').value.trim();
+  const kontakt = $('offerKontakt').value.trim();
+  const nummer = $('offerNummer').value.trim() || generateOfferNumber();
+  const dateStr = $('offerDato').value;
+  const dateObj = dateStr ? new Date(dateStr + 'T00:00:00') : new Date();
+  const notes = $('offerNotes').value.trim();
+
+  $('cFirma').textContent = firma;
+  if (kontakt) { $('cKontakt').textContent = kontakt; $('cKontakt').hidden = false; }
+  else { $('cKontakt').hidden = true; }
+
+  $('cNummer').textContent = nummer;
+  $('cDato').textContent = fmtDateLong(dateObj);
+
+  $('cHoursPerDay').textContent = nf2plain(hpd);
+  $('cKm').textContent = nf0plain(r.kmPerDay);
+  $('cDays').textContent = days.map(d => dayNames[d]).join(', ') || '—';
+  $('cHoursPerWeek').textContent = nf2plain(r.hoursPerWeek);
+
+  $('cHourPrice').textContent = nf2plain(r.hourPrice);
+  $('cDayPrice').textContent = nf2plain(r.hourPrice * hpd);
+
+  const fuelItem = r.fuel === 'diesel' ? 'Diesel' : 'Strøm';
+  const items = ['Varebil', 'Sjåfør', fuelItem, 'Forsikring', 'Service og vedlikehold', 'Dekk og dekkhotell'];
+  if (r.cToll > 0) items.push('Bompenger');
+  const check = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#00643A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  $('cIncluded').innerHTML = items.map(t => `<li>${check}<span>${escapeHtml(t)}</span></li>`).join('');
+
+  if (notes) {
+    $('cNotes').textContent = notes;
+    $('cNotesWrap').hidden = false;
+  } else {
+    $('cNotesWrap').hidden = true;
+  }
+
+  const validTo = new Date(dateObj);
+  validTo.setDate(validTo.getDate() + 30);
+  $('cValidFrom').textContent = fmtDateLong(dateObj);
+  $('cValidTo').textContent = fmtDateLong(validTo);
+}
+
+function generateOfferPDF() {
+  const firma = $('offerFirma').value.trim();
+  if (!firma) {
+    $('offerError').textContent = 'Firmanavn er obligatorisk.';
+    $('offerError').hidden = false;
+    $('offerFirma').focus();
+    return;
+  }
+
+  renderCustomerDoc();
+  closeOfferModal();
+
+  document.body.classList.add('print-customer');
+
+  const cleanup = () => {
+    document.body.classList.remove('print-customer');
+    window.removeEventListener('afterprint', cleanup);
+  };
+  window.addEventListener('afterprint', cleanup);
+  // Fallback if afterprint doesn't fire (some browsers)
+  setTimeout(() => {
+    if (document.body.classList.contains('print-customer')) cleanup();
+  }, 4000);
+
+  setTimeout(() => window.print(), 80);
+}
+
+/* ===========================================================
  * Fuel toggle
  * =========================================================== */
 function setFuel(fuel) {
@@ -2143,6 +2706,15 @@ function wire() {
   $('copyBtn').addEventListener('click', copyLink);
   $('emailBtn').addEventListener('click', emailLink);
   $('resetBtn').addEventListener('click', resetAll);
+
+  // Kundetilbud
+  $('offerBtn').addEventListener('click', openOfferModal);
+  $('offerClose').addEventListener('click', closeOfferModal);
+  $('offerCancel').addEventListener('click', closeOfferModal);
+  $('offerGenerate').addEventListener('click', generateOfferPDF);
+  $('offerModal').addEventListener('click', (e) => {
+    if (e.target === $('offerModal')) closeOfferModal();
+  });
 }
 
 /* ===========================================================
