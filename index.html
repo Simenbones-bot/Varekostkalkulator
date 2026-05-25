@@ -873,6 +873,22 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
   font-size: 12px;
   text-align: right;
 }
+.donut-legend .lg-total {
+  border-top: 1.5px solid var(--neutral-300);
+  padding-top: 9px;
+  margin-top: 4px;
+}
+.donut-legend .lg-total .nm,
+.donut-legend .lg-total .vl {
+  font-weight: 700;
+  color: var(--neutral-900);
+  font-size: 13px;
+}
+.donut-legend .lg-total .nm .sub {
+  font-weight: 400;
+  font-size: 10px;
+  color: var(--neutral-500);
+}
 
 /* =========================================================================
  * Segmented toggle (fuel type)
@@ -2577,7 +2593,9 @@ function compute() {
   const elPerDay     = kmPerDay * kwhPerKm * powerPrice;
   const dieselPerDay = (kmPerDay / 10) * lPerMil * dieselPrice;
   const powerPerDay   = fuelType === 'diesel' ? dieselPerDay : elPerDay;
-  const powerPerMonth = powerPerDay * (365 / 12);
+  const wdpm          = days.length * 52 / 12;             // arbeidsdager per måned
+  // Drivstoff brennes bare på arbeidsdager → fordel over wdpm, ikke 365/12.
+  const powerPerMonth = powerPerDay * wdpm;
 
   // Total monthly self-cost
   const monthCost = fixedIncluded + powerPerMonth + driverMonth;
@@ -2600,18 +2618,28 @@ function compute() {
   // monthPrice = monthCost + groupMonth + marginMonth (by construction)
   const marginMonth = Math.max(0, monthPrice - monthCost - groupMonth);
 
-  // Per kilometer breakdown — sjåfør bruker lønnstimer
-  const calDaysPerMonth = 365 / 12;
-  const fuelPerKm   = fuelType === 'diesel' ? (lPerMil / 10) * dieselPrice : kwhPerKm * powerPrice;
-  const driverPerKm = kmPerDay > 0 ? (driverHourCost * paidHpd) / kmPerDay : 0;
-  const fixedPerKm  = kmPerDay > 0 ? fixedIncluded / (kmPerDay * calDaysPerMonth) : 0;
-  const selvkostPerKm = fuelPerKm + driverPerKm + fixedPerKm;
-  const salgsprisPerKm = kmPerDay > 0 ? (hourPrice * hpd) / kmPerDay : 0;
+  // ---- Per arbeidsdag-komponenter (donut + per-km) ----
+  // Sum 1+2+3+4+5 = dayPriceSimple = hourPrice × hpd.
+  const safeWdpm = wdpm > 0 ? wdpm : 1;
+  const fixedDay  = fixedIncluded / safeWdpm;
+  const fuelDay   = powerPerMonth / safeWdpm;   // = powerPerDay (siden powerPerMonth = powerPerDay × wdpm)
+  // driverDay er allerede = driverHourCost × paidHpd = driverMonth / wdpm
+  const groupDay  = groupMonth  / safeWdpm;
+  const marginDay = marginMonth / safeWdpm;
+  const selvkostDay = fixedDay + fuelDay + driverDay;
+
+  // Per kilometer (avledet fra per-dag-verdiene)
+  const fuelPerKm   = kmPerDay > 0 ? fuelDay / kmPerDay : 0;       // = kWh/km × pris (intrinsic)
+  const driverPerKm = kmPerDay > 0 ? driverDay / kmPerDay : 0;
+  const fixedPerKm  = kmPerDay > 0 ? fixedDay / kmPerDay : 0;
+  const selvkostPerKm  = fuelPerKm + driverPerKm + fixedPerKm;     // = selvkostDay / km
 
   // Forenklet salgspris (display): bruker FAKTURERBARE timer × 5/21 virkedager
   const dayPriceSimple   = hourPrice * hpd;
   const weekPriceSimple  = dayPriceSimple * 5;
   const monthPriceSimple = dayPriceSimple * 21;
+
+  const salgsprisPerKm = kmPerDay > 0 ? dayPriceSimple / kmPerDay : 0;
 
   return {
     kmPerDay,
@@ -2630,6 +2658,7 @@ function compute() {
     groupPct, groupFrac, marginPct,
     weekCost, yearCost, weekPrice, monthPrice, yearPrice,
     groupMonth, marginMonth,
+    wdpm, fixedDay, fuelDay, groupDay, marginDay, selvkostDay,
     fuelPerKm, driverPerKm, fixedPerKm, selvkostPerKm, salgsprisPerKm,
     dayPriceSimple, weekPriceSimple, monthPriceSimple
   };
@@ -2643,13 +2672,12 @@ function renderDonut(r) {
   const legend = $('donutLegend');
 
   const energyName = r.fuel === 'diesel' ? 'Diesel' : 'Strøm';
-  const dayDiv = 365 / 12;
   const segments = [
-    { key: 'fixed',  name: 'Faste kostnader',  sub: 'Kapital + andre faste', color: '#8A8780', value: r.fixedIncluded / dayDiv },
-    { key: 'power',  name: energyName,         sub: 'Per dag',               color: '#B5E099', value: r.powerPerMonth / dayDiv },
-    { key: 'driver', name: 'Sjåfør',           sub: 'Lønn + sosiale',        color: '#00643A', value: r.driverMonth / dayDiv },
-    { key: 'group',  name: 'Konsernfelles',    sub: 'Trekk fra salgspris',   color: '#4A1011', value: r.groupMonth / dayDiv },
-    { key: 'margin', name: 'Margin',           sub: 'Fortjeneste',           color: '#E32D22', value: Math.max(0, r.marginMonth) / dayDiv },
+    { key: 'fixed',  name: 'Faste kostnader',  sub: 'Kapital + andre faste',  color: '#8A8780', value: r.fixedDay },
+    { key: 'power',  name: energyName,         sub: 'Drivstoff per arbeidsdag', color: '#B5E099', value: r.fuelDay },
+    { key: 'driver', name: 'Sjåfør',           sub: 'Lønn + sosiale',          color: '#00643A', value: r.driverDay },
+    { key: 'group',  name: 'Konsernfellestrekk', sub: 'Av salgspris',           color: '#4A1011', value: r.groupDay },
+    { key: 'margin', name: 'Margin',           sub: 'Fortjeneste',             color: '#E32D22', value: Math.max(0, r.marginDay) },
   ];
 
   const total = segments.reduce((s, x) => s + (x.value > 0 ? x.value : 0), 0);
@@ -2684,7 +2712,7 @@ function renderDonut(r) {
   const centerText = `
     <g class="donut-center">
       <text x="50" y="48" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="6" fill="#6E6E6E" font-weight="500" letter-spacing="0.3">SALGSPRIS</text>
-      <text x="50" y="58" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="10" fill="#111110" font-weight="600">${nf0plain(r.monthPrice / dayDiv)}</text>
+      <text x="50" y="58" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="10" fill="#111110" font-weight="600">${nf0plain(r.dayPriceSimple)}</text>
       <text x="50" y="66" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="4.5" fill="#6E6E6E">kr / dag</text>
     </g>
   `;
@@ -2704,6 +2732,16 @@ function renderDonut(r) {
     `;
     legend.appendChild(row);
   });
+
+  // Total line — skal matche "Salgspris med margin · Per dag" eksakt
+  const totalRow = document.createElement('div');
+  totalRow.className = 'lg lg-total';
+  totalRow.innerHTML = `
+    <span class="sw" style="background:transparent"></span>
+    <span class="nm">Total salgspris<span class="sub">Per arbeidsdag · eks. mva</span></span>
+    <span class="vl">${nf2plain(r.dayPriceSimple)} kr</span>
+  `;
+  legend.appendChild(totalRow);
 
   return segments;
 }
@@ -2867,12 +2905,12 @@ function renderPrint(r, segments) {
   $('pMargin').textContent = nf2plain(r.marginPct);
   $('pGroupMonth').textContent = nf2plain(r.groupMonth);
 
-  // Breakdown (per dag — segments are already per-day values)
+  // Breakdown (per arbeidsdag — segments er allerede per-dag-verdier)
   const total = segments.reduce((s, x) => s + (x.value > 0 ? x.value : 0), 0);
   $('pBreakdown').innerHTML = segments.map(s => {
     const pct = total > 0 ? (s.value / total) * 100 : 0;
     return `<dt>${escapeHtml(s.name)} (${nf2plain(pct)}%)</dt><dd>${nf2plain(s.value)} kr/dag</dd>`;
-  }).join('');
+  }).join('') + `<dt><strong>Total salgspris</strong></dt><dd><strong>${nf2plain(r.dayPriceSimple)} kr/dag</strong></dd>`;
 
   // Per km
   const fuelLabel = r.fuel === 'diesel' ? 'Diesel' : 'Strøm';
