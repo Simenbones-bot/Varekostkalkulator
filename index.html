@@ -2986,15 +2986,14 @@ function render() {
   if (r.lunchEligible) {
     ln.classList.remove('lunch-off');
     ln.innerHTML =
-      `<span class="badge">Lunsj 30 min</span>` +
-      `Lunsj trekkes fra fakturerbare timer og lønn ved vakter over 5,5 t. ` +
-      `Fakturerbare timer: <strong>${nf2plain(r.paidHpd)} t/dag</strong> (ekskl. lunsj) · ` +
-      `Bruttotimer: <strong>${nf2plain(r.hpd)} t/dag</strong>.`;
+      `<span class="badge">Lunsjtrekk aktivt</span>` +
+      `Fakturerbare timer = <strong>${nf2plain(r.paidHpd)} t/dag</strong> ` +
+      `(brutto ${nf2plain(r.hpd)} t − 0,5 t lunsj).`;
   } else {
     ln.classList.add('lunch-off');
     ln.innerHTML =
       `<span class="badge">Ingen lunsjtrekk</span>` +
-      `Vakt under 5,5 t — fakturerbare timer: <strong>${nf2plain(r.hpd)} t/dag</strong> (ingen lunsjfradrag).`;
+      `Fakturerbare timer: <strong>${nf2plain(r.hpd)} t/dag</strong>.`;
   }
 
   // Self-cost & details
