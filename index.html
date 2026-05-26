@@ -830,6 +830,111 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
   line-height: 1.45;
 }
 .km-foot strong { color: var(--neutral-800); font-weight: 600; }
+
+/* =========================================================================
+ * Detailed table (Detaljert)
+ * ========================================================================= */
+.dt-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 11px;
+  color: var(--neutral-700);
+  margin-bottom: 8px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.dt-head .dt-route .lbl {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--neutral-500);
+  margin-right: 4px;
+}
+.dt-head .dt-route #dtRoute { font-weight: 600; color: var(--neutral-900); }
+.dt-head .dt-date {
+  font-variant-numeric: tabular-nums;
+  color: var(--neutral-600);
+}
+.dt-scroll {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid var(--neutral-300);
+}
+.dt-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  background: var(--neutral-0);
+  min-width: 560px;
+}
+.dt-table th, .dt-table td {
+  padding: 8px 12px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  border-bottom: 1px solid var(--neutral-200);
+  white-space: nowrap;
+}
+.dt-table th:first-child, .dt-table td:first-child {
+  text-align: left;
+  white-space: normal;
+}
+.dt-table thead th {
+  background: var(--neutral-100);
+  font-weight: 600;
+  color: var(--neutral-700);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 1.5px solid var(--neutral-300);
+}
+.dt-table thead th:first-child { color: var(--neutral-900); }
+.dt-table .dt-group td {
+  background: var(--neutral-100);
+  font-weight: 600;
+  color: var(--neutral-900);
+  border-top: 1px solid var(--neutral-300);
+}
+.dt-table .dt-sub td:first-child {
+  padding-left: 24px;
+  color: var(--neutral-700);
+  font-weight: 400;
+}
+.dt-table .dt-sub td {
+  color: var(--neutral-800);
+}
+.dt-table .dt-selvkost td {
+  background: #EAF4ED;
+  font-weight: 600;
+  color: var(--bring-green-deep);
+  border-top: 2px solid var(--bring-green-deep);
+  border-bottom: 2px solid var(--bring-green-deep);
+}
+.dt-table .dt-paaslag td {
+  background: #FFF7E6;
+  font-weight: 500;
+  color: var(--neutral-900);
+}
+.dt-table .dt-paaslag td:first-child { padding-left: 24px; font-weight: 500; }
+.dt-table .dt-total td {
+  background: var(--posten-red-deep);
+  color: var(--neutral-0);
+  font-weight: 700;
+  font-size: 13px;
+  border-top: 2px solid var(--posten-burgundy);
+}
+.dt-table .dt-empty {
+  color: var(--neutral-400);
+}
+.dt-foot {
+  font-size: 11px;
+  color: var(--neutral-500);
+  margin: 8px 0 0;
+  line-height: 1.45;
+}
+
 .donut-wrap {
   display: grid;
   grid-template-columns: 160px 1fr;
@@ -1285,6 +1390,67 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
   line-height: 1.5;
 }
 .print-doc .pfoot strong { color: var(--neutral-900); }
+
+/* Detaljert tabell på intern utskrift — svart/hvitt med bold + borders */
+.print-doc .pblock-wide {
+  grid-column: 1 / -1;
+}
+.print-doc .print-detailed-block { margin-top: 4px; }
+.print-doc .print-dt-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9pt;
+  color: #000;
+  margin-bottom: 6px;
+}
+.print-doc .print-dt-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9pt;
+  color: #000;
+  border: 1.5px solid #000;
+}
+.print-doc .print-dt-table th,
+.print-doc .print-dt-table td {
+  padding: 4px 8px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  border: 1px solid #000;
+}
+.print-doc .print-dt-table th:first-child,
+.print-doc .print-dt-table td:first-child {
+  text-align: left;
+}
+.print-doc .print-dt-table thead th {
+  font-weight: 700;
+  font-size: 8.5pt;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1.5px solid #000;
+}
+.print-doc .print-dt-table .dt-group td {
+  font-weight: 700;
+  border-top: 1.5px solid #000;
+}
+.print-doc .print-dt-table .dt-sub td:first-child {
+  padding-left: 18px;
+  font-weight: 400;
+}
+.print-doc .print-dt-table .dt-selvkost td {
+  font-weight: 700;
+  border-top: 1.5px solid #000;
+  border-bottom: 1.5px solid #000;
+}
+.print-doc .print-dt-table .dt-paaslag td:first-child {
+  padding-left: 18px;
+}
+.print-doc .print-dt-table .dt-total td {
+  font-weight: 700;
+  font-size: 10pt;
+  border-top: 2px solid #000;
+  border-bottom: 2px solid #000;
+}
+.print-doc .print-dt-table .dt-empty { color: #555; }
 .print-doc .gradient-line {
   height: 3px;
   background: linear-gradient(90deg, #E32D22 0%, #FFFFFF 50%, #56B529 100%);
@@ -1958,7 +2124,8 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
       <h3 class="result-card-title">Kostnadsfordeling <span class="pill" id="bdPill">Per dag</span></h3>
       <div class="seg-toggle seg-mini" id="breakdownToggle" role="tablist" aria-label="Visning av kostnadsfordeling">
         <button type="button" class="seg active" data-view="donut" role="tab" aria-selected="true">Donut</button>
-        <button type="button" class="seg" data-view="detailed" role="tab" aria-selected="false">Per km</button>
+        <button type="button" class="seg" data-view="perkm" role="tab" aria-selected="false">Kostnad per km</button>
+        <button type="button" class="seg" data-view="detailed" role="tab" aria-selected="false">Detaljert</button>
       </div>
       <div id="viewDonut" class="bd-view">
         <div class="donut-wrap">
@@ -1966,7 +2133,7 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
           <div class="donut-legend" id="donutLegend"></div>
         </div>
       </div>
-      <div id="viewDetailed" class="bd-view" hidden>
+      <div id="viewPerKm" class="bd-view" hidden>
         <div class="km-grid">
           <div class="km-tile">
             <div class="lbl" id="kmFuelLbl">Drivstoff</div>
@@ -1995,6 +2162,15 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
           </div>
         </div>
         <p class="km-foot">Basert på <strong><span id="kmBasisKm">—</span> km/dag</strong> og <strong><span id="kmBasisHours">—</span> timer/dag</strong>. Selvkost per km synker når daglig kjørelengde øker.</p>
+      </div>
+      <div id="viewDetailed" class="bd-view" hidden>
+        <div class="dt-head">
+          <div class="dt-route"><span class="lbl">Rute:</span> <span id="dtRoute">—</span></div>
+          <div class="dt-date" id="dtDate">—</div>
+        </div>
+        <div class="dt-scroll">
+          <table class="dt-table" id="dtTable" aria-label="Detaljert kostnadsoppstilling"></table>
+        </div>
       </div>
     </div>
 
@@ -2114,6 +2290,15 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
         <h3>Kostnad per kilometer</h3>
         <dl id="pPerKm"></dl>
       </div>
+    </div>
+
+    <div class="pblock pblock-wide print-detailed-block">
+      <h3>Detaljert kostnadsoppstilling</h3>
+      <div class="print-dt-meta">
+        <span><strong>Rute:</strong> <span id="pDtRoute">—</span></span>
+        <span id="pDtDate">—</span>
+      </div>
+      <table class="print-dt-table" id="pDtTable"></table>
     </div>
 
     <div class="gradient-line"></div>
@@ -2838,17 +3023,158 @@ function render() {
   $('kmBasisKm').textContent  = nf0plain(r.kmPerDay);
   $('kmBasisHours').textContent = nf2plain(r.hpd);
 
+  // Detaljert tabell
+  renderDetailedHead();
+  const detailedTableHtml = renderDetailedTable(r);
+  $('dtTable').innerHTML = detailedTableHtml;
+
   // Print
-  renderPrint(r, segments);
+  renderPrint(r, segments, detailedTableHtml);
+}
+
+/* ===========================================================
+ * Detailed breakdown table (Detaljert)
+ *
+ * All beløp er på "per måned"-basis internt. Konverteringer:
+ *   Per dag  = per måned / wdpm   (matcher donut og salgspris-card)
+ *   Per time = per dag / hpd       (fakturerbare bruttotimer)
+ *   Per km   = per dag / kmPerDay
+ *   Per år   = per måned × 12
+ * Total salgspris per dag = monthPrice / wdpm = hourPrice × hpd
+ * = dayPriceSimple = identisk med salgspris-panelet og donut-totalen.
+ * =========================================================== */
+function renderDetailedTable(r) {
+  const wdpm = r.wdpm > 0 ? r.wdpm : 1;
+  const hpd  = r.hpd > 0 ? r.hpd : 1;
+  const km   = r.kmPerDay > 0 ? r.kmPerDay : 0;
+  const capFrac = Math.min(1, Math.max(0, (r.capitalPct || 0) / 100));
+
+  // Format helper: en celle. Sum-rader får alltid tall (force=true).
+  const cell = (mnd, opts) => {
+    const force = opts && opts.force;
+    const dag  = mnd / wdpm;
+    const time = dag / hpd;
+    const aar  = mnd * 12;
+    const perKm = km > 0 ? dag / km : 0;
+    const fmt = (v) => (!force && Math.abs(v) < 0.005)
+      ? '<td class="dt-empty">—</td>'
+      : `<td>${nf2plain(v)}</td>`;
+    return fmt(perKm) + fmt(time) + fmt(dag) + fmt(aar);
+  };
+
+  // Sub-row, kun synlig hvis verdi > 0 (med mindre alwaysShow).
+  const sub = (name, mnd, alwaysShow) => {
+    if (!alwaysShow && Math.abs(mnd) < 0.005) return '';
+    return `<tr class="dt-sub"><td>${escapeHtml(name)}</td>${cell(mnd)}</tr>`;
+  };
+
+  const groupHead = (name, mnd) =>
+    `<tr class="dt-group"><td>${escapeHtml(name)}</td>${cell(mnd, {force:true})}</tr>`;
+
+  // ---- Komponenter (per måned) ----
+  // Gruppe 1: Kapital — slideren begrenser hva som er inkludert
+  const leasingIn = r.cLeasing * capFrac;
+  const insIn     = r.cInsurance * capFrac;
+  const servIn    = r.cService * capFrac;
+  const offIn     = r.cOffice * capFrac;
+  const capSum    = r.capitalIn;
+
+  // Gruppe 2: Lønn — bruker LØNNSTIMER (paidHpd)
+  const bruttoLonnMonth = r.grossWage * r.paidHoursPerMonth;
+  const sosialeMonth    = bruttoLonnMonth * (r.socialPct / 100);
+  const lonnSum         = r.driverMonth;
+
+  // Gruppe 3: Andre faste (100%)
+  const andreSum = r.otherFixed;
+
+  // Gruppe 4: Drivstoff
+  const drivstoffSum = r.powerPerMonth;
+  const fuelLabel    = r.fuel === 'diesel' ? 'Diesel' : 'Strøm';
+
+  // Selvkost = sum av gruppe 1+2+3+4
+  const selvkostMonth = capSum + lonnSum + andreSum + drivstoffSum;
+
+  // Påslag
+  const groupMonth  = r.groupMonth;
+  const marginMonth = r.marginMonth;
+
+  // Total salgspris
+  const totalMonth = selvkostMonth + groupMonth + marginMonth; // = r.monthPrice
+
+  // ---- Bygg HTML ----
+  const thead = `
+    <thead>
+      <tr>
+        <th>Kostnadspost</th>
+        <th>Per km (kr)</th>
+        <th>Per time (kr)</th>
+        <th>Per dag (kr)</th>
+        <th>Per år (kr)</th>
+      </tr>
+    </thead>`;
+
+  let body = '<tbody>';
+
+  // Gruppe 1: Kapital
+  body += groupHead('Kapitalkostnad', capSum);
+  body += sub('Leasing', leasingIn);
+  body += sub('Forsikring', insIn);
+  body += sub('Service / vedlikehold', servIn);
+  body += sub('Kontor / parkering', offIn);
+
+  // Gruppe 2: Lønn
+  body += groupHead('Lønn', lonnSum);
+  body += sub('Bruttolønn', bruttoLonnMonth, true);
+  body += sub(`Sosiale kostnader (${nf0plain(r.socialPct)}%)`, sosialeMonth, true);
+
+  // Gruppe 3: Andre faste
+  body += groupHead('Andre faste kostnader', andreSum);
+  body += sub('Dekk / dekkhotell', r.cTires);
+  body += sub('Skade / erstatninger', r.cDamage);
+  body += sub('Bompenger', r.cToll);
+  body += sub('Annet', r.cOther);
+  customRows.forEach(c => {
+    const amt = parseFloat(String(c.amount).replace(',', '.')) || 0;
+    if (amt > 0) body += sub(c.name || 'Egendefinert', amt);
+  });
+
+  // Gruppe 4: Drivstoff
+  body += groupHead('Drivstoffkostnader', drivstoffSum);
+  body += sub(fuelLabel, drivstoffSum, true);
+
+  // Selvkost
+  body += `<tr class="dt-selvkost"><td>Selvkost</td>${cell(selvkostMonth, {force:true})}</tr>`;
+
+  // Påslag
+  body += `<tr class="dt-paaslag"><td>Konsernfelles (${nf0plain(r.groupPct)}%)</td>${cell(groupMonth, {force:true})}</tr>`;
+  body += `<tr class="dt-paaslag"><td>Margin (${nf0plain(r.marginPct)}%)</td>${cell(marginMonth, {force:true})}</tr>`;
+
+  // Total salgspris
+  body += `<tr class="dt-total"><td>Total salgspris</td>${cell(totalMonth, {force:true})}</tr>`;
+
+  body += '</tbody>';
+
+  return thead + body;
+}
+
+function renderDetailedHead() {
+  const rn = $('routeName').value.trim();
+  $('dtRoute').textContent = rn || '—';
+  const d = new Date();
+  const fmt = new Intl.DateTimeFormat('nb-NO', { day: '2-digit', month: 'long', year: 'numeric' });
+  $('dtDate').textContent = fmt.format(d);
 }
 
 /* ===========================================================
  * Print doc
  * =========================================================== */
-function renderPrint(r, segments) {
+function renderPrint(r, segments, detailedTableHtml) {
   const rn = $('routeName').value.trim();
   $('pRouteName').textContent = rn;
   $('pRouteName').hidden = !rn;
+  $('pDtRoute').textContent = rn || '—';
+  $('pDtDate').textContent = $('dtDate').textContent || '';
+  if (detailedTableHtml) $('pDtTable').innerHTML = detailedTableHtml;
 
   $('pKm').textContent = nf0plain(r.kmPerDay);
   if (r.fuel === 'diesel') {
@@ -3166,15 +3492,18 @@ function generateOfferPDF() {
  * Breakdown view toggle (donut / per km)
  * =========================================================== */
 function setBreakdownView(view) {
-  const v = view === 'detailed' ? 'detailed' : 'donut';
+  const valid = ['donut', 'perkm', 'detailed'];
+  const v = valid.includes(view) ? view : 'donut';
   document.querySelectorAll('#breakdownToggle .seg').forEach(btn => {
     const active = btn.dataset.view === v;
     btn.classList.toggle('active', active);
     btn.setAttribute('aria-selected', active ? 'true' : 'false');
   });
-  $('viewDonut').hidden = v !== 'donut';
+  $('viewDonut').hidden    = v !== 'donut';
+  $('viewPerKm').hidden    = v !== 'perkm';
   $('viewDetailed').hidden = v !== 'detailed';
-  $('bdPill').textContent = v === 'detailed' ? 'Per km' : 'Per dag';
+  const pill = v === 'perkm' ? 'Per km' : (v === 'detailed' ? 'Periodisert' : 'Per dag');
+  $('bdPill').textContent = pill;
 }
 
 /* ===========================================================
