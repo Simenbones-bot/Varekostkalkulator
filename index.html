@@ -1388,6 +1388,22 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
   display: flex; align-items: center; justify-content: center;
   color: var(--neutral-0); font-size: 11px; font-weight: 600; white-space: nowrap;
   min-width: 2px;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.gantt-bar.dragging { cursor: grabbing; box-shadow: 0 0 0 2px rgba(255,255,255,0.6) inset; }
+.gantt-bar-label { pointer-events: none; padding: 0 4px; overflow: hidden; text-overflow: ellipsis; }
+.gantt-bar-handle {
+  position: absolute; top: 0; bottom: 0; width: 12px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: ew-resize; touch-action: none;
+}
+.gantt-bar-handle.left { left: 0; }
+.gantt-bar-handle.right { right: 0; }
+.gantt-bar-handle::after {
+  content: ''; width: 3px; height: 14px; border-radius: 2px;
+  background: rgba(255, 255, 255, 0.75);
 }
 .gantt-axis {
   display: flex; justify-content: space-between;
@@ -4099,7 +4115,7 @@ function ganttCardHtml(route) {
       </div>
       <div class="gantt-days">${dayBtns}</div>
       <div class="gantt-timeline">
-        <div class="gantt-track">${ticks}<div class="gantt-bar"></div></div>
+        <div class="gantt-track">${ticks}<div class="gantt-bar"><span class="gantt-bar-handle left"></span><span class="gantt-bar-label"></span><span class="gantt-bar-handle right"></span></div></div>
         <div class="gantt-axis"><span>00</span><span>06</span><span>12</span><span>18</span><span>24</span></div>
       </div>
       <div class="gantt-prices">
@@ -4120,7 +4136,8 @@ function refreshGanttCard(card, route) {
   const bar = card.querySelector('.gantt-bar');
   bar.style.left = left + '%';
   bar.style.width = width + '%';
-  bar.textContent = (to > from && width > 14) ? `${route.from}–${route.to}` : '';
+  const lbl = bar.querySelector('.gantt-bar-label');
+  if (lbl) lbl.textContent = (to > from && width > 14) ? `${route.from}–${route.to}` : '';
   card.querySelector('.out-hour').innerHTML  = `${nf2plain(r.hourPrice)} <small>kr/t</small>`;
   card.querySelector('.out-day').innerHTML   = `${nf2plain(r.dayPriceSimple)} <small>kr</small>`;
   card.querySelector('.out-month').innerHTML = `${nf0plain(r.monthPriceSimple)} <small>kr</small>`;
@@ -4205,6 +4222,73 @@ function buildRoutesTableHtml(rows) {
     `<tr class="sum dt-selvkost"><td colspan="6">Sum dagspris (alle ruter)</td><td class="num">${nf2plain(sumDay)}</td></tr>` +
     `<tr class="sum dt-total"><td colspan="6">Sum pr. måned (alle ruter)</td><td class="num">${nf0plain(sumMonth)}</td></tr>`;
   return head + '<tbody>' + body + foot + '</tbody>';
+}
+
+// --- Dra/endre tidsbjelken direkte ---
+function hoursToTimeStr(h) {
+  const total = Math.round(Math.max(0, Math.min(24, h)) * 60);
+  const hh = Math.floor(total / 60), mm = total % 60;
+  return String(hh).padStart(2, '0') + ':' + String(mm).padStart(2, '0');
+}
+const ganttSnap = h => Math.round(h * 4) / 4;  // 15-min steg
+let ganttDrag = null;
+
+function onGanttPointerDown(e) {
+  const bar = e.target.closest('.gantt-bar');
+  if (!bar) return;
+  const card = e.target.closest('.gantt-card');
+  const route = card && findGanttRoute(parseInt(card.dataset.id, 10));
+  if (!route) return;
+  const handle = e.target.closest('.gantt-bar-handle');
+  const track = card.querySelector('.gantt-track');
+  const rect = track.getBoundingClientRect();
+  ganttDrag = {
+    route, card,
+    mode: handle ? (handle.classList.contains('left') ? 'left' : 'right') : 'move',
+    startX: e.clientX,
+    trackWidth: rect.width || 1,
+    fromH: parseTime(route.from),
+    toH: parseTime(route.to)
+  };
+  bar.classList.add('dragging');
+  e.preventDefault();
+  window.addEventListener('pointermove', onGanttPointerMove);
+  window.addEventListener('pointerup', onGanttPointerUp);
+}
+
+function onGanttPointerMove(e) {
+  const d = ganttDrag;
+  if (!d) return;
+  const deltaH = (e.clientX - d.startX) / d.trackWidth * 24;
+  const minDur = 0.25;
+  let from = d.fromH, to = d.toH;
+  if (d.mode === 'move') {
+    const dur = d.toH - d.fromH;
+    from = Math.max(0, Math.min(24 - dur, ganttSnap(d.fromH + deltaH)));
+    to = from + dur;
+  } else if (d.mode === 'left') {
+    from = Math.max(0, Math.min(d.toH - minDur, ganttSnap(d.fromH + deltaH)));
+  } else {
+    to = Math.min(24, Math.max(d.fromH + minDur, ganttSnap(d.toH + deltaH)));
+  }
+  d.route.from = hoursToTimeStr(from);
+  d.route.to = hoursToTimeStr(to);
+  const fromInput = d.card.querySelector('[data-f="from"]');
+  const toInput = d.card.querySelector('[data-f="to"]');
+  if (fromInput) { fromInput.value = d.route.from; fromInput.classList.remove('invalid'); }
+  if (toInput) { toInput.value = d.route.to; toInput.classList.remove('invalid'); }
+  refreshGanttCard(d.card, d.route);
+  updateGanttTotals();
+}
+
+function onGanttPointerUp() {
+  if (ganttDrag) {
+    const bar = ganttDrag.card.querySelector('.gantt-bar');
+    if (bar) bar.classList.remove('dragging');
+  }
+  ganttDrag = null;
+  window.removeEventListener('pointermove', onGanttPointerMove);
+  window.removeEventListener('pointerup', onGanttPointerUp);
 }
 
 function ganttRouteFromEvent(e) {
@@ -4310,6 +4394,7 @@ function wire() {
   gr.addEventListener('input', onGanttInput);
   gr.addEventListener('focusout', onGanttBlur);
   gr.addEventListener('click', onGanttClick);
+  gr.addEventListener('pointerdown', onGanttPointerDown);
 
   // Kundetilbud
   $('offerBtn').addEventListener('click', openOfferModal);
