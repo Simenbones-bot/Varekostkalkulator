@@ -1228,6 +1228,210 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
 }
 
 /* =========================================================================
+ * Mode tabs (Kalkulator / Gantt)
+ * ========================================================================= */
+.mode-tabs {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 18px 48px 0;
+  display: flex;
+  gap: 6px;
+}
+.mode-tab {
+  appearance: none;
+  border: 1px solid var(--neutral-300);
+  border-bottom: none;
+  background: var(--neutral-100);
+  color: var(--neutral-600);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 11px 22px;
+  border-radius: 10px 10px 0 0;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.mode-tab:hover { color: var(--neutral-900); }
+.mode-tab.active {
+  background: var(--neutral-0);
+  color: var(--brand);
+  border-color: var(--neutral-300);
+  box-shadow: 0 -2px 0 var(--brand) inset;
+}
+
+/* =========================================================================
+ * Gantt view
+ * ========================================================================= */
+.gantt-view {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 24px 48px 8px;
+}
+.gantt-view[hidden] { display: none; }
+
+.gantt-basis {
+  background: var(--neutral-0);
+  border: 1px solid var(--neutral-200);
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-bottom: 20px;
+}
+.gantt-basis h3 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 15px;
+  margin: 0 0 4px;
+  color: var(--neutral-900);
+}
+.gantt-basis .hint {
+  font-size: 12.5px;
+  color: var(--neutral-600);
+  margin: 0 0 12px;
+  line-height: 1.5;
+}
+.gantt-basis .hint a { color: var(--brand); cursor: pointer; text-decoration: underline; }
+.gantt-basis-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+}
+.gantt-chip {
+  background: var(--neutral-100);
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 12px;
+}
+.gantt-chip .l { color: var(--neutral-600); margin-right: 6px; }
+.gantt-chip .v { color: var(--neutral-900); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.gantt-routes { display: flex; flex-direction: column; gap: 14px; }
+
+.gantt-card {
+  background: var(--neutral-0);
+  border: 1px solid var(--neutral-300);
+  border-radius: 14px;
+  padding: 16px 18px;
+}
+.gantt-card-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.gantt-field { display: flex; flex-direction: column; gap: 4px; }
+.gantt-field label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  color: var(--neutral-500);
+}
+.gantt-field .gantt-name { min-width: 200px; flex: 1; }
+.gantt-input {
+  appearance: none;
+  border: 1.5px solid var(--neutral-300);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--neutral-900);
+  background: var(--neutral-0);
+  width: 100%;
+}
+.gantt-input:focus { outline: none; border-color: var(--brand); }
+.gantt-input.w-km { width: 90px; }
+.gantt-input.w-time { width: 78px; text-align: center; font-variant-numeric: tabular-nums; }
+.gantt-input.invalid { border-color: var(--status-error); }
+.gantt-fuel {
+  display: inline-flex;
+  border: 1.5px solid var(--neutral-300);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.gantt-fuel button {
+  appearance: none; border: none; background: var(--neutral-0);
+  font-family: var(--font-sans); font-size: 12.5px; font-weight: 600;
+  color: var(--neutral-600); padding: 8px 12px; cursor: pointer;
+}
+.gantt-fuel button.active { background: var(--brand); color: var(--neutral-0); }
+.gantt-remove {
+  appearance: none; border: 1.5px solid var(--neutral-300); background: var(--neutral-0);
+  color: var(--posten-red-deep); border-radius: 8px; width: 38px; height: 38px;
+  cursor: pointer; font-size: 18px; line-height: 1; margin-left: auto;
+}
+.gantt-remove:hover { background: var(--posten-red-deep); color: var(--neutral-0); border-color: var(--posten-red-deep); }
+
+.gantt-days { display: flex; gap: 5px; margin-bottom: 14px; flex-wrap: wrap; }
+.gantt-day {
+  appearance: none; border: 1.5px solid var(--neutral-300); background: var(--neutral-0);
+  color: var(--neutral-600); border-radius: 7px; padding: 5px 10px;
+  font-family: var(--font-sans); font-size: 12px; font-weight: 600; cursor: pointer;
+}
+.gantt-day.on { background: var(--bring-green-deep); color: var(--neutral-0); border-color: var(--bring-green-deep); }
+
+.gantt-timeline { margin-bottom: 14px; }
+.gantt-track {
+  position: relative;
+  height: 30px;
+  background: var(--neutral-100);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.gantt-track .tick {
+  position: absolute; top: 0; bottom: 0; width: 1px; background: var(--neutral-200);
+}
+.gantt-bar {
+  position: absolute; top: 4px; bottom: 4px;
+  background: linear-gradient(90deg, var(--bring-green) 0%, var(--bring-green-deep) 100%);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--neutral-0); font-size: 11px; font-weight: 600; white-space: nowrap;
+  min-width: 2px;
+}
+.gantt-axis {
+  display: flex; justify-content: space-between;
+  font-size: 9.5px; color: var(--neutral-500); margin-top: 3px;
+  font-variant-numeric: tabular-nums;
+}
+
+.gantt-prices {
+  display: flex; flex-wrap: wrap; gap: 10px 22px;
+  border-top: 1px solid var(--neutral-200); padding-top: 12px;
+}
+.gantt-price .l { font-size: 10px; text-transform: uppercase; letter-spacing: .06em; color: var(--neutral-500); font-weight: 600; }
+.gantt-price .v {
+  font-family: var(--font-display); font-size: 18px; font-weight: 500;
+  color: var(--neutral-900); font-variant-numeric: tabular-nums;
+}
+.gantt-price.is-hour .v { color: var(--brand); }
+.gantt-price .v small { font-size: 11px; color: var(--neutral-500); font-weight: 400; }
+
+.gantt-add {
+  appearance: none; border: 1.5px dashed var(--neutral-400); background: var(--neutral-0);
+  color: var(--neutral-700); border-radius: 12px; padding: 13px 18px; width: 100%;
+  font-family: var(--font-sans); font-size: 14px; font-weight: 600; cursor: pointer;
+  margin-top: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+}
+.gantt-add:hover { border-color: var(--brand); color: var(--brand); }
+
+.gantt-totals {
+  margin-top: 18px;
+  background: var(--neutral-900);
+  color: var(--neutral-0);
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex; flex-wrap: wrap; gap: 14px 28px; align-items: center;
+}
+.gantt-totals .gt {
+  display: flex; flex-direction: column; gap: 3px;
+}
+.gantt-totals .gt .l { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--bring-mint); font-weight: 600; }
+.gantt-totals .gt .v { font-family: var(--font-display); font-size: 22px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.gantt-totals .gt .v small { font-size: 12px; color: var(--neutral-400); }
+.gantt-empty { color: var(--neutral-500); font-size: 14px; padding: 24px 0; text-align: center; }
+
+/* =========================================================================
  * Print
  * ========================================================================= */
 .print-only { display: none; }
@@ -1250,6 +1454,7 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
   .footer-note { display: none !important; }
   .btn, .print-cta, .toast, .modal-backdrop { display: none !important; }
   .brand-gradient { display: none !important; }
+  .mode-tabs, .gantt-view { display: none !important; }
 
   /* Default: show internal version */
   body:not(.print-customer) .print-only.internal { display: block !important; }
@@ -1763,6 +1968,11 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
   </div>
 </header>
 
+<div class="mode-tabs" id="modeTabs">
+  <button type="button" class="mode-tab active" data-mode="calc">Kalkulator</button>
+  <button type="button" class="mode-tab" data-mode="gantt">Gantt – flere ruter</button>
+</div>
+
 <main>
   <!-- INPUTS ============================================================== -->
   <div class="sections">
@@ -2206,6 +2416,23 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
 
   </aside>
 </main>
+
+<section class="gantt-view" id="ganttView" hidden>
+  <div class="gantt-basis">
+    <h3>Delt grunnlag</h3>
+    <p class="hint">Faste kostnader, kapitalandel, lønn, sosiale kostnader, konsernfelles, margin og drivstoffpriser hentes fra <a id="ganttGotoCalc">fanen Kalkulator</a> og gjelder alle ruter. Endrer du dem der, oppdateres alle rutene under automatisk. Per rute legger du inn navn, drivstoff, kjørelengde, arbeidstid og hvilke ukedager den kjøres.</p>
+    <div class="gantt-basis-grid" id="ganttBasis"></div>
+  </div>
+
+  <div class="gantt-routes" id="ganttRoutes"></div>
+
+  <button type="button" class="gantt-add" id="ganttAddBtn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+    Legg til rute
+  </button>
+
+  <div class="gantt-totals" id="ganttTotals"></div>
+</section>
 
 <div class="footer-note">
   Alle beløp er oppgitt eks. mva. Kalkulatoren er et verktøy for indikativ prising; faktiske kostnader vil variere med kjøremønster, strømpris og driftsforhold.
@@ -2720,38 +2947,65 @@ function hoursPerDay() {
 
 /* ===========================================================
  * Core compute
+ *
+ * computeCore(p) er en REN funksjon: all prislogikk bor her.
+ * Både kalkulatoren og Gantt-modus kaller den, slik at fremtidige
+ * endringer i formelen automatisk slår ut begge steder.
  * =========================================================== */
-function compute() {
-  const kmPerDay      = num('kmPerDay');
 
-  // Electric branch (always read so URL/print can show defaults)
-  const vehicleType   = parseFloat($('vehicleType').value);
+// Leser drivstoff-inputs fra DOM (delt grunnlag).
+function readEnergyInputs() {
+  const vehicleType = parseFloat($('vehicleType').value);
   const kwhOverrideRaw = $('kwhOverride').value.trim();
-  const kwhOverride   = kwhOverrideRaw === '' ? null : parseFloat(kwhOverrideRaw.replace(',', '.'));
-  const kwhPerKm      = (kwhOverride !== null && isFinite(kwhOverride) && kwhOverride > 0) ? kwhOverride : vehicleType;
-  const powerPrice    = num('powerPrice');
-
-  // Diesel branch
+  const kwhOverride = kwhOverrideRaw === '' ? null : parseFloat(kwhOverrideRaw.replace(',', '.'));
+  const kwhPerKm = (kwhOverride !== null && isFinite(kwhOverride) && kwhOverride > 0) ? kwhOverride : vehicleType;
   const vehicleTypeDiesel = parseFloat($('vehicleTypeDiesel').value);
   const lPerMilOverrideRaw = $('lPerMilOverride').value.trim();
   const lPerMilOverride = lPerMilOverrideRaw === '' ? null : parseFloat(lPerMilOverrideRaw.replace(',', '.'));
-  const lPerMil       = (lPerMilOverride !== null && isFinite(lPerMilOverride) && lPerMilOverride > 0) ? lPerMilOverride : vehicleTypeDiesel;
-  const dieselPrice   = num('dieselPrice');
+  const lPerMil = (lPerMilOverride !== null && isFinite(lPerMilOverride) && lPerMilOverride > 0) ? lPerMilOverride : vehicleTypeDiesel;
+  return {
+    vehicleType, kwhPerKm, powerPrice: num('powerPrice'),
+    vehicleTypeDiesel, lPerMil, dieselPrice: num('dieselPrice')
+  };
+}
 
-  const cLeasing   = num('costLeasing');
-  const cInsurance = num('costInsurance');
-  const cService   = num('costService');
-  const cOffice    = num('costOffice');
-  const cTires     = num('costTires');
-  const cDamage    = num('costDamage');
-  const cToll      = num('costToll');
-  const cOther     = num('costOther');
-  const cCustom    = customTotal();
+// Leser delte faste kostnader + økonomiske parametre fra DOM.
+// Disse er felles for kalkulator og alle Gantt-ruter.
+function readSharedInputs() {
+  return {
+    cLeasing: num('costLeasing'), cInsurance: num('costInsurance'),
+    cService: num('costService'), cOffice: num('costOffice'),
+    cTires: num('costTires'), cDamage: num('costDamage'),
+    cToll: num('costToll'), cOther: num('costOther'), cCustom: customTotal(),
+    capitalPct: num('capitalPct'),
+    grossWage: num('grossWage'), socialPct: num('socialPct'),
+    groupPct: num('groupPct'), marginPct: num('marginPct')
+  };
+}
+
+function compute() {
+  return computeCore({
+    ...readEnergyInputs(),
+    ...readSharedInputs(),
+    fuelType,
+    kmPerDay: num('kmPerDay'),
+    hpd: hoursPerDay(),
+    days: getDays()
+  });
+}
+
+function computeCore(p) {
+  const {
+    kmPerDay, fuelType,
+    vehicleType, kwhPerKm, powerPrice,
+    vehicleTypeDiesel, lPerMil, dieselPrice,
+    cLeasing, cInsurance, cService, cOffice, cTires, cDamage, cToll, cOther, cCustom,
+    capitalPct, grossWage, socialPct, hpd, days, groupPct, marginPct
+  } = p;
 
   const capitalPool = cLeasing + cInsurance + cService + cOffice;
   const otherFixed  = cTires + cDamage + cToll + cOther + cCustom;
 
-  const capitalPct  = num('capitalPct');
   const capFrac     = Math.min(1, Math.max(0, capitalPct / 100));
   const capitalIn   = capitalPool * capFrac;
   const capitalOut  = capitalPool - capitalIn;
@@ -2759,12 +3013,7 @@ function compute() {
   const fixedTotalAll = capitalPool + otherFixed;
   const fixedIncluded = capitalIn + otherFixed;
 
-  const grossWage = num('grossWage');
-  const socialPct = num('socialPct');
   const driverHourCost = grossWage * (1 + socialPct / 100);
-
-  const hpd = hoursPerDay();
-  const days = getDays();
 
   // Lunsj: 30 min trekkes fra LØNN og FAKTURERBARE TIMER ved vakter over 5,5 t.
   // Begge reduseres likt → lønnstimer = fakturerbare timer = paidHpd.
@@ -2799,11 +3048,9 @@ function compute() {
   // Timepris baseres på FAKTURERBARE timer (= paidHoursPerMonth, ekskl. lunsj ved vakt > 5,5t)
   const hourCost = paidHoursPerMonth > 0 ? monthCost / paidHoursPerMonth : 0;
 
-  const groupPct = num('groupPct');
   const groupFrac = Math.min(0.99, Math.max(0, groupPct / 100));
   const adjHourCost = hourCost / (1 - groupFrac);
 
-  const marginPct = num('marginPct');
   const hourPrice = adjHourCost * (1 + marginPct / 100);
 
   const weekCost  = hourCost  * paidHoursPerWeek;
@@ -3033,6 +3280,10 @@ function render() {
 
   // Print
   renderPrint(r, segments, detailedTableHtml);
+
+  // Hold Gantt-modus synkronisert med delt grunnlag
+  renderGanttBasis();
+  refreshAllGanttOutputs();
 }
 
 /* ===========================================================
@@ -3624,6 +3875,271 @@ function resetAll() {
 }
 
 /* ===========================================================
+ * Gantt-modus — pris flere ruter samtidig
+ *
+ * Faste kostnader + økonomiske parametre deles fra kalkulatoren
+ * (readSharedInputs / readEnergyInputs). Hver rute bidrar med navn,
+ * drivstoff, km/dag, arbeidstid og ukedager. Prisen regnes med samme
+ * computeCore() som kalkulatoren — fremtidige formelendringer slår
+ * automatisk ut her også.
+ * =========================================================== */
+const GANTT_DAY_LABELS = ['', 'Man', 'Tir', 'Ons', 'Tor', 'Fre', 'Lør', 'Søn'];
+let ganttRoutes = [];
+let ganttSeq = 1;
+let currentMode = 'calc';
+
+function normalizeTimeStr(raw) {
+  let s = String(raw).trim().replace(/[^\d:]/g, '');
+  if (!s) return '';
+  if (!s.includes(':')) {
+    if (s.length === 1)      s = '0' + s + ':00';
+    else if (s.length === 2) s = s + ':00';
+    else if (s.length === 3) s = '0' + s[0] + ':' + s.slice(1);
+    else                     s = s.slice(0, 2) + ':' + s.slice(2, 4);
+  } else {
+    const [h = '0', m = '00'] = s.split(':');
+    s = h.padStart(2, '0').slice(-2) + ':' + m.padEnd(2, '0').slice(0, 2);
+  }
+  return s;
+}
+
+function setMode(mode) {
+  currentMode = (mode === 'gantt') ? 'gantt' : 'calc';
+  document.querySelectorAll('#modeTabs .mode-tab').forEach(b =>
+    b.classList.toggle('active', b.dataset.mode === currentMode));
+  document.querySelector('main').hidden = currentMode !== 'calc';
+  $('ganttView').hidden = currentMode !== 'gantt';
+  if (currentMode === 'gantt') {
+    seedGanttIfEmpty();
+    renderGantt();
+  }
+}
+
+function seedGanttIfEmpty() {
+  if (ganttRoutes.length) return;
+  const days = getDays();
+  ganttRoutes.push({
+    id: ganttSeq++,
+    name: $('routeName').value.trim() || 'Rute 1',
+    fuel: fuelType,
+    kmPerDay: num('kmPerDay') || 120,
+    from: $('shiftFrom').value || '07:00',
+    to: $('shiftTo').value || '15:00',
+    days: days.length ? days : [1, 2, 3, 4, 5]
+  });
+}
+
+function addGanttRoute() {
+  ganttRoutes.push({
+    id: ganttSeq++,
+    name: 'Rute ' + (ganttRoutes.length + 1),
+    fuel: fuelType,
+    kmPerDay: num('kmPerDay') || 120,
+    from: '07:00',
+    to: '15:00',
+    days: [1, 2, 3, 4, 5]
+  });
+  renderGantt();
+}
+
+function removeGanttRoute(id) {
+  ganttRoutes = ganttRoutes.filter(r => r.id !== id);
+  renderGantt();
+}
+
+function findGanttRoute(id) {
+  return ganttRoutes.find(r => r.id === id);
+}
+
+// Pris for én rute — bruker delt grunnlag + rutens egne verdier.
+function computeGanttRoute(route) {
+  const hpd = Math.max(0, parseTime(route.to) - parseTime(route.from));
+  return computeCore({
+    ...readEnergyInputs(),
+    ...readSharedInputs(),
+    fuelType: route.fuel,
+    kmPerDay: parseFloat(String(route.kmPerDay).replace(',', '.')) || 0,
+    hpd,
+    days: Array.isArray(route.days) ? route.days.slice() : []
+  });
+}
+
+function renderGanttBasis() {
+  const el = $('ganttBasis');
+  if (!el) return;
+  const s = readSharedInputs();
+  const fixedTotal = s.cLeasing + s.cInsurance + s.cService + s.cOffice +
+                     s.cTires + s.cDamage + s.cToll + s.cOther + s.cCustom;
+  const chips = [
+    ['Faste kostnader', nf0plain(fixedTotal) + ' kr/mnd'],
+    ['Kapitalandel', nf0plain(s.capitalPct) + ' %'],
+    ['Bruttolønn', nf2plain(s.grossWage) + ' kr/t'],
+    ['Sosiale', nf0plain(s.socialPct) + ' %'],
+    ['Konsernfelles', nf0plain(s.groupPct) + ' %'],
+    ['Margin', nf0plain(s.marginPct) + ' %']
+  ];
+  el.innerHTML = chips.map(([l, v]) =>
+    `<div class="gantt-chip"><span class="l">${l}</span><span class="v">${v}</span></div>`).join('');
+}
+
+function ganttCardHtml(route) {
+  const dayBtns = [1, 2, 3, 4, 5, 6, 7].map(d => {
+    const on = route.days.includes(d) ? ' on' : '';
+    return `<button type="button" class="gantt-day${on}" data-day="${d}">${GANTT_DAY_LABELS[d]}</button>`;
+  }).join('');
+  const ticks = [25, 50, 75].map(p => `<div class="tick" style="left:${p}%"></div>`).join('');
+  return `
+    <div class="gantt-card" data-id="${route.id}">
+      <div class="gantt-card-top">
+        <div class="gantt-field gantt-name">
+          <label>Rutenavn</label>
+          <input class="gantt-input" data-f="name" value="${escapeHtml(route.name)}" maxlength="80">
+        </div>
+        <div class="gantt-field">
+          <label>Drivstoff</label>
+          <div class="gantt-fuel">
+            <button type="button" data-fuel="el" class="${route.fuel !== 'diesel' ? 'active' : ''}">El</button>
+            <button type="button" data-fuel="diesel" class="${route.fuel === 'diesel' ? 'active' : ''}">Diesel</button>
+          </div>
+        </div>
+        <div class="gantt-field">
+          <label>Km/dag</label>
+          <input class="gantt-input w-km" data-f="kmPerDay" inputmode="decimal" value="${escapeHtml(String(route.kmPerDay))}">
+        </div>
+        <div class="gantt-field">
+          <label>Fra</label>
+          <input class="gantt-input w-time gantt-time" data-f="from" value="${escapeHtml(route.from)}">
+        </div>
+        <div class="gantt-field">
+          <label>Til</label>
+          <input class="gantt-input w-time gantt-time" data-f="to" value="${escapeHtml(route.to)}">
+        </div>
+        <button type="button" class="gantt-remove" data-act="remove" title="Fjern rute" aria-label="Fjern rute">&times;</button>
+      </div>
+      <div class="gantt-days">${dayBtns}</div>
+      <div class="gantt-timeline">
+        <div class="gantt-track">${ticks}<div class="gantt-bar"></div></div>
+        <div class="gantt-axis"><span>00</span><span>06</span><span>12</span><span>18</span><span>24</span></div>
+      </div>
+      <div class="gantt-prices">
+        <div class="gantt-price is-hour"><div class="l">Timepris</div><div class="v out-hour">—</div></div>
+        <div class="gantt-price"><div class="l">Dagspris</div><div class="v out-day">—</div></div>
+        <div class="gantt-price"><div class="l">Pr. måned</div><div class="v out-month">—</div></div>
+        <div class="gantt-price"><div class="l">Fakturerbare t/dag</div><div class="v out-hpd">—</div></div>
+        <div class="gantt-price"><div class="l">Dager/uke</div><div class="v out-dpw">—</div></div>
+      </div>
+    </div>`;
+}
+
+function refreshGanttCard(card, route) {
+  const r = computeGanttRoute(route);
+  const from = parseTime(route.from), to = parseTime(route.to);
+  const left = Math.min(100, Math.max(0, from / 24 * 100));
+  const width = Math.min(100 - left, Math.max(0, (to - from) / 24 * 100));
+  const bar = card.querySelector('.gantt-bar');
+  bar.style.left = left + '%';
+  bar.style.width = width + '%';
+  bar.textContent = (to > from && width > 14) ? `${route.from}–${route.to}` : '';
+  card.querySelector('.out-hour').innerHTML  = `${nf2plain(r.hourPrice)} <small>kr/t</small>`;
+  card.querySelector('.out-day').innerHTML   = `${nf2plain(r.dayPriceSimple)} <small>kr</small>`;
+  card.querySelector('.out-month').innerHTML = `${nf0plain(r.monthPriceSimple)} <small>kr</small>`;
+  card.querySelector('.out-hpd').textContent = nf2plain(r.paidHpd);
+  card.querySelector('.out-dpw').textContent = nf0plain(route.days.length);
+}
+
+function refreshAllGanttOutputs() {
+  document.querySelectorAll('#ganttRoutes .gantt-card').forEach(card => {
+    const route = findGanttRoute(parseInt(card.dataset.id, 10));
+    if (route) refreshGanttCard(card, route);
+  });
+  updateGanttTotals();
+}
+
+function updateGanttTotals() {
+  const el = $('ganttTotals');
+  if (!el) return;
+  let sumDay = 0, sumMonth = 0;
+  ganttRoutes.forEach(route => {
+    const r = computeGanttRoute(route);
+    sumDay += r.dayPriceSimple;
+    sumMonth += r.monthPriceSimple;
+  });
+  el.innerHTML =
+    `<div class="gt"><div class="l">Antall ruter</div><div class="v">${ganttRoutes.length}</div></div>` +
+    `<div class="gt"><div class="l">Sum dagspris</div><div class="v">${nf0plain(sumDay)} <small>kr</small></div></div>` +
+    `<div class="gt"><div class="l">Sum pr. måned</div><div class="v">${nf0plain(sumMonth)} <small>kr</small></div></div>`;
+}
+
+function renderGantt() {
+  renderGanttBasis();
+  const wrap = $('ganttRoutes');
+  if (!wrap) return;
+  if (!ganttRoutes.length) {
+    wrap.innerHTML = '<div class="gantt-empty">Ingen ruter ennå. Klikk «Legg til rute» for å starte.</div>';
+  } else {
+    wrap.innerHTML = ganttRoutes.map(ganttCardHtml).join('');
+  }
+  refreshAllGanttOutputs();
+}
+
+function ganttRouteFromEvent(e) {
+  const card = e.target.closest('.gantt-card');
+  if (!card) return { card: null, route: null };
+  return { card, route: findGanttRoute(parseInt(card.dataset.id, 10)) };
+}
+
+function onGanttInput(e) {
+  const f = e.target.dataset.f;
+  if (!f) return;
+  const { card, route } = ganttRouteFromEvent(e);
+  if (!route) return;
+  route[f] = e.target.value;
+  if (f === 'from' || f === 'to') {
+    const t = e.target.value.trim();
+    e.target.classList.toggle('invalid', t !== '' && !TIME_RE.test(t));
+  }
+  refreshGanttCard(card, route);
+  updateGanttTotals();
+}
+
+function onGanttBlur(e) {
+  if (!e.target.classList || !e.target.classList.contains('gantt-time')) return;
+  const { card, route } = ganttRouteFromEvent(e);
+  if (!route) return;
+  const norm = normalizeTimeStr(e.target.value);
+  e.target.value = norm;
+  e.target.classList.toggle('invalid', norm !== '' && !TIME_RE.test(norm));
+  route[e.target.dataset.f] = norm;
+  refreshGanttCard(card, route);
+  updateGanttTotals();
+}
+
+function onGanttClick(e) {
+  const { card, route } = ganttRouteFromEvent(e);
+  if (!route) return;
+  const removeBtn = e.target.closest('[data-act="remove"]');
+  if (removeBtn) { removeGanttRoute(route.id); return; }
+  const fuelBtn = e.target.closest('.gantt-fuel button');
+  if (fuelBtn) {
+    route.fuel = fuelBtn.dataset.fuel;
+    card.querySelectorAll('.gantt-fuel button').forEach(b =>
+      b.classList.toggle('active', b.dataset.fuel === route.fuel));
+    refreshGanttCard(card, route);
+    updateGanttTotals();
+    return;
+  }
+  const dayBtn = e.target.closest('.gantt-day');
+  if (dayBtn) {
+    const d = parseInt(dayBtn.dataset.day, 10);
+    if (route.days.includes(d)) route.days = route.days.filter(x => x !== d);
+    else route.days = [...route.days, d].sort((a, b) => a - b);
+    dayBtn.classList.toggle('on');
+    refreshGanttCard(card, route);
+    updateGanttTotals();
+  }
+}
+
+/* ===========================================================
  * Wire-up
  * =========================================================== */
 function wire() {
@@ -3659,6 +4175,16 @@ function wire() {
   $('copyBtn').addEventListener('click', copyLink);
   $('emailBtn').addEventListener('click', emailLink);
   $('resetBtn').addEventListener('click', resetAll);
+
+  // Gantt-modus
+  document.querySelectorAll('#modeTabs .mode-tab').forEach(b =>
+    b.addEventListener('click', () => setMode(b.dataset.mode)));
+  $('ganttGotoCalc').addEventListener('click', () => setMode('calc'));
+  $('ganttAddBtn').addEventListener('click', addGanttRoute);
+  const gr = $('ganttRoutes');
+  gr.addEventListener('input', onGanttInput);
+  gr.addEventListener('focusout', onGanttBlur);
+  gr.addEventListener('click', onGanttClick);
 
   // Kundetilbud
   $('offerBtn').addEventListener('click', openOfferModal);
