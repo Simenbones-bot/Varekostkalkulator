@@ -1910,6 +1910,36 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
   color: var(--neutral-700);
   font-style: italic;
 }
+.customer-doc #cRoutesWrap[hidden] { display: none; }
+.customer-doc .cust-routes {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9.5pt;
+  color: var(--neutral-900);
+}
+.customer-doc .cust-routes th,
+.customer-doc .cust-routes td {
+  padding: 6px 8px;
+  text-align: left;
+  border-bottom: 1px solid var(--neutral-200);
+  white-space: nowrap;
+}
+.customer-doc .cust-routes thead th {
+  font-size: 8pt;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--neutral-600);
+  border-bottom: 1.5px solid var(--neutral-400);
+}
+.customer-doc .cust-routes td.num,
+.customer-doc .cust-routes th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.customer-doc .cust-routes td.nm { font-weight: 600; }
+.customer-doc .cust-routes tr.sum td {
+  font-weight: 700;
+  border-top: 1.5px solid var(--posten-burgundy);
+  border-bottom: none;
+  color: var(--posten-burgundy);
+}
 .customer-doc .notes-block[hidden] { display: none; }
 .customer-doc .notes-block p {
   font-size: 11pt;
@@ -2543,6 +2573,11 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
       <table class="print-dt-table" id="pDtTable"></table>
     </div>
 
+    <div class="pblock pblock-wide print-detailed-block" id="pRoutesBlock" hidden>
+      <h3>Ruter (Gantt)</h3>
+      <table class="print-dt-table" id="pRoutesTable"></table>
+    </div>
+
     <div class="gradient-line"></div>
 
     <div class="result-block">
@@ -2621,6 +2656,11 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
         <span class="value"><span id="cDayPrice">—</span> kr</span>
         <span class="unit">per arbeidsdag · eks. mva</span>
       </div>
+    </div>
+
+    <div class="customer-section" id="cRoutesWrap" hidden>
+      <h3>Ruter i tilbudet</h3>
+      <table class="cust-routes" id="cRoutesTable"></table>
     </div>
 
     <div class="customer-section" id="cAddonsWrap" hidden>
@@ -3445,6 +3485,14 @@ function renderPrint(r, segments, detailedTableHtml) {
   $('pDtDate').textContent = $('dtDate').textContent || '';
   if (detailedTableHtml) $('pDtTable').innerHTML = detailedTableHtml;
 
+  // Ruter (Gantt) — vis i intern PDF når flere ruter finnes
+  if (ganttRoutes.length >= 2) {
+    $('pRoutesTable').innerHTML = buildRoutesTableHtml(ganttRoutesForDoc());
+    $('pRoutesBlock').hidden = false;
+  } else {
+    $('pRoutesBlock').hidden = true;
+  }
+
   $('pKm').textContent = nf0plain(r.kmPerDay);
   if (r.fuel === 'diesel') {
     $('pFuel').textContent = 'Diesel';
@@ -3678,6 +3726,14 @@ function renderCustomerDoc() {
 
   $('cHourPrice').textContent = nf2plain(r.hourPrice);
   $('cDayPrice').textContent = nf2plain(r.hourPrice * hpd);
+
+  // Ruter fra Gantt (når flere ruter er lagt til)
+  if (ganttRoutes.length >= 2) {
+    $('cRoutesTable').innerHTML = buildRoutesTableHtml(ganttRoutesForDoc());
+    $('cRoutesWrap').hidden = false;
+  } else {
+    $('cRoutesWrap').hidden = true;
+  }
 
   const tollSeparate = $('offerTollSep').checked;
   const extraKmRaw = $('offerExtraKm').value.trim().replace(',', '.');
@@ -4107,6 +4163,48 @@ function renderGantt() {
     wrap.innerHTML = ganttRoutes.map(ganttCardHtml).join('');
   }
   refreshAllGanttOutputs();
+}
+
+// Datagrunnlag for ruter i utskrift / kundetilbud.
+function ganttRoutesForDoc() {
+  return ganttRoutes.map(route => {
+    const r = computeGanttRoute(route);
+    return {
+      name: route.name || 'Rute',
+      fuel: route.fuel === 'diesel' ? 'Diesel' : 'El',
+      time: `${route.from}–${route.to}`,
+      days: route.days.slice().sort((a, b) => a - b).map(d => GANTT_DAY_LABELS[d]).join(', ') || '—',
+      km: parseFloat(String(route.kmPerDay).replace(',', '.')) || 0,
+      hourPrice: r.hourPrice,
+      dayPrice: r.dayPriceSimple,
+      monthPrice: r.monthPriceSimple
+    };
+  });
+}
+
+// Bygger en HTML-tabell over rutene (brukes både i kundetilbud og intern PDF).
+function buildRoutesTableHtml(rows) {
+  let sumDay = 0, sumMonth = 0;
+  const body = rows.map(x => {
+    sumDay += x.dayPrice; sumMonth += x.monthPrice;
+    return `<tr>` +
+      `<td class="nm">${escapeHtml(x.name)}</td>` +
+      `<td>${escapeHtml(x.fuel)}</td>` +
+      `<td>${escapeHtml(x.time)}</td>` +
+      `<td>${escapeHtml(x.days)}</td>` +
+      `<td class="num">${nf0plain(x.km)}</td>` +
+      `<td class="num">${nf2plain(x.hourPrice)}</td>` +
+      `<td class="num">${nf2plain(x.dayPrice)}</td>` +
+      `</tr>`;
+  }).join('');
+  const head = `<thead><tr>` +
+    `<th>Rute</th><th>Drivstoff</th><th>Arbeidstid</th><th>Dager</th>` +
+    `<th class="num">Km/dag</th><th class="num">Timepris (kr)</th><th class="num">Dagspris (kr)</th>` +
+    `</tr></thead>`;
+  const foot =
+    `<tr class="sum dt-selvkost"><td colspan="6">Sum dagspris (alle ruter)</td><td class="num">${nf2plain(sumDay)}</td></tr>` +
+    `<tr class="sum dt-total"><td colspan="6">Sum pr. måned (alle ruter)</td><td class="num">${nf0plain(sumMonth)}</td></tr>`;
+  return head + '<tbody>' + body + foot + '</tbody>';
 }
 
 function ganttRouteFromEvent(e) {
