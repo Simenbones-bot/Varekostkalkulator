@@ -1357,8 +1357,8 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
 .gantt-fuel button.active { background: var(--brand); color: var(--neutral-0); }
 .gantt-remove {
   appearance: none; border: 1.5px solid var(--neutral-300); background: var(--neutral-0);
-  color: var(--posten-red-deep); border-radius: 8px; width: 38px; height: 38px;
-  cursor: pointer; font-size: 18px; line-height: 1; margin-left: auto;
+  color: var(--posten-red-deep); border-radius: 8px; width: 34px; height: 34px;
+  cursor: pointer; font-size: 17px; line-height: 1;
 }
 .gantt-remove:hover { background: var(--posten-red-deep); color: var(--neutral-0); border-color: var(--posten-red-deep); }
 
@@ -1395,20 +1395,21 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
   font-variant-numeric: tabular-nums;
 }
 
-.gantt-cap { margin-bottom: 14px; }
-.gantt-cap .top {
-  display: flex; justify-content: space-between; align-items: baseline;
-  margin-bottom: 6px;
+.gantt-top-right {
+  margin-left: auto;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
 }
-.gantt-cap .top .label {
-  font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em;
-  font-weight: 600; color: var(--neutral-500);
+.gantt-cap-mini { display: flex; flex-direction: column; gap: 4px; }
+.gantt-cap-mini label {
+  font-size: 9px; text-transform: uppercase; letter-spacing: 0.05em;
+  font-weight: 600; color: var(--neutral-500); white-space: nowrap;
 }
-.gantt-cap .top .display { font-size: 12px; color: var(--neutral-600); }
-.gantt-cap .top .display .out-cap { color: var(--brand); font-weight: 700; margin-right: 5px; font-variant-numeric: tabular-nums; }
-.gantt-cap input[type="range"] { height: 6px; }
-.gantt-cap input[type="range"]::-webkit-slider-thumb { width: 18px; height: 18px; }
-.gantt-cap input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; }
+.gantt-cap-mini label .out-cap { color: var(--brand); font-weight: 700; font-variant-numeric: tabular-nums; }
+.gantt-cap-mini input[type="range"] { width: 110px; height: 5px; }
+.gantt-cap-mini input[type="range"]::-webkit-slider-thumb { width: 14px; height: 14px; border-width: 2px; }
+.gantt-cap-mini input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border-width: 2px; }
 
 .gantt-prices {
   display: flex; flex-wrap: wrap; gap: 10px 22px;
@@ -4088,19 +4089,18 @@ function ganttCardHtml(route) {
           <label>Til</label>
           <input class="gantt-input w-time gantt-time" data-f="to" value="${escapeHtml(route.to)}">
         </div>
-        <button type="button" class="gantt-remove" data-act="remove" title="Fjern rute" aria-label="Fjern rute">&times;</button>
+        <div class="gantt-top-right">
+          <div class="gantt-cap-mini">
+            <label>Kapital <span class="out-cap">—</span></label>
+            <input type="range" data-f="capitalPct" min="0" max="100" step="1" value="${escapeHtml(String(route.capitalPct))}" title="Kapitalandel inkludert">
+          </div>
+          <button type="button" class="gantt-remove" data-act="remove" title="Fjern rute" aria-label="Fjern rute">&times;</button>
+        </div>
       </div>
       <div class="gantt-days">${dayBtns}</div>
       <div class="gantt-timeline">
         <div class="gantt-track">${ticks}<div class="gantt-bar"></div></div>
         <div class="gantt-axis"><span>00</span><span>06</span><span>12</span><span>18</span><span>24</span></div>
-      </div>
-      <div class="gantt-cap">
-        <div class="top">
-          <span class="label">Kapitalandel</span>
-          <span class="display"><span class="out-cap">—</span>av kapitalkostnader inkludert</span>
-        </div>
-        <input type="range" data-f="capitalPct" min="0" max="100" step="1" value="${escapeHtml(String(route.capitalPct))}">
       </div>
       <div class="gantt-prices">
         <div class="gantt-price is-hour"><div class="l">Timepris</div><div class="v out-hour">—</div></div>
