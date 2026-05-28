@@ -1395,6 +1395,21 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
   font-variant-numeric: tabular-nums;
 }
 
+.gantt-cap { margin-bottom: 14px; }
+.gantt-cap .top {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 6px;
+}
+.gantt-cap .top .label {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em;
+  font-weight: 600; color: var(--neutral-500);
+}
+.gantt-cap .top .display { font-size: 12px; color: var(--neutral-600); }
+.gantt-cap .top .display .out-cap { color: var(--brand); font-weight: 700; margin-right: 5px; font-variant-numeric: tabular-nums; }
+.gantt-cap input[type="range"] { height: 6px; }
+.gantt-cap input[type="range"]::-webkit-slider-thumb { width: 18px; height: 18px; }
+.gantt-cap input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; }
+
 .gantt-prices {
   display: flex; flex-wrap: wrap; gap: 10px 22px;
   border-top: 1px solid var(--neutral-200); padding-top: 12px;
@@ -3925,7 +3940,8 @@ function seedGanttIfEmpty() {
     kmPerDay: num('kmPerDay') || 120,
     from: $('shiftFrom').value || '07:00',
     to: $('shiftTo').value || '15:00',
-    days: days.length ? days : [1, 2, 3, 4, 5]
+    days: days.length ? days : [1, 2, 3, 4, 5],
+    capitalPct: readSharedInputs().capitalPct
   });
 }
 
@@ -3937,7 +3953,8 @@ function addGanttRoute() {
     kmPerDay: num('kmPerDay') || 120,
     from: '07:00',
     to: '15:00',
-    days: [1, 2, 3, 4, 5]
+    days: [1, 2, 3, 4, 5],
+    capitalPct: readSharedInputs().capitalPct
   });
   renderGantt();
 }
@@ -3958,6 +3975,7 @@ function computeGanttRoute(route) {
     ...readEnergyInputs(),
     ...readSharedInputs(),
     fuelType: route.fuel,
+    capitalPct: route.capitalPct,
     kmPerDay: parseFloat(String(route.kmPerDay).replace(',', '.')) || 0,
     hpd,
     days: Array.isArray(route.days) ? route.days.slice() : []
@@ -4021,6 +4039,13 @@ function ganttCardHtml(route) {
         <div class="gantt-track">${ticks}<div class="gantt-bar"></div></div>
         <div class="gantt-axis"><span>00</span><span>06</span><span>12</span><span>18</span><span>24</span></div>
       </div>
+      <div class="gantt-cap">
+        <div class="top">
+          <span class="label">Kapitalandel</span>
+          <span class="display"><span class="out-cap">—</span>av kapitalkostnader inkludert</span>
+        </div>
+        <input type="range" data-f="capitalPct" min="0" max="100" step="1" value="${escapeHtml(String(route.capitalPct))}">
+      </div>
       <div class="gantt-prices">
         <div class="gantt-price is-hour"><div class="l">Timepris</div><div class="v out-hour">—</div></div>
         <div class="gantt-price"><div class="l">Dagspris</div><div class="v out-day">—</div></div>
@@ -4045,6 +4070,8 @@ function refreshGanttCard(card, route) {
   card.querySelector('.out-month').innerHTML = `${nf0plain(r.monthPriceSimple)} <small>kr</small>`;
   card.querySelector('.out-hpd').textContent = nf2plain(r.paidHpd);
   card.querySelector('.out-dpw').textContent = nf0plain(route.days.length);
+  const capEl = card.querySelector('.out-cap');
+  if (capEl) capEl.textContent = nf0plain(parseFloat(route.capitalPct) || 0) + ' % ';
 }
 
 function refreshAllGanttOutputs() {
