@@ -1217,6 +1217,122 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
 }
 .toast svg { width: 16px; height: 16px; stroke: var(--bring-mint); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
+/* =========================================================================
+ * Password gate
+ * ========================================================================= */
+.pw-gate {
+  position: fixed;
+  inset: 0;
+  background: var(--neutral-100);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.pw-gate[hidden] { display: none; }
+.pw-box {
+  background: var(--neutral-0);
+  border: 1px solid var(--neutral-300);
+  border-radius: 20px;
+  padding: 40px 44px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.pw-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.pw-logo .roundel {
+  width: 28px; height: 28px; border-radius: 50%; flex: none;
+  background: linear-gradient(180deg, var(--neutral-700) 0% 50%, var(--posten-red) 50% 100%);
+}
+.pw-logo .wordmark {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--neutral-900);
+  letter-spacing: -0.01em;
+}
+.pw-logo .wordmark span { color: var(--neutral-600); font-weight: 500; }
+.pw-heading {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 22px;
+  color: var(--headline);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+.pw-desc {
+  font-size: 14px;
+  color: var(--neutral-600);
+  margin: 0;
+  line-height: 1.5;
+}
+.pw-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.pw-form label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--neutral-700);
+}
+.pw-input-wrap { position: relative; }
+.pw-input {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--neutral-900);
+  background: var(--neutral-0);
+  border: 1.5px solid var(--neutral-300);
+  border-radius: 10px;
+  padding: 12px 14px;
+  width: 100%;
+  letter-spacing: 0.18em;
+  transition: border-color 120ms ease-out, box-shadow 120ms ease-out;
+}
+.pw-input:focus {
+  outline: none;
+  border-color: var(--neutral-900);
+  box-shadow: 0 0 0 3px rgba(27,93,239,0.18);
+}
+.pw-input.invalid {
+  border-color: var(--status-error);
+  background: rgba(199,38,27,0.04);
+}
+.pw-error {
+  font-size: 13px;
+  color: var(--status-error);
+  font-weight: 500;
+  padding: 9px 12px;
+  background: rgba(199,38,27,0.08);
+  border-left: 2px solid var(--status-error);
+  border-radius: 0 8px 8px 0;
+}
+.pw-error[hidden] { display: none; }
+.pw-btn {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 15px;
+  background: var(--neutral-900);
+  color: var(--neutral-0);
+  border: none;
+  border-radius: 12px;
+  padding: 13px 20px;
+  cursor: pointer;
+  transition: background 160ms ease-out, transform 120ms ease-out;
+  width: 100%;
+}
+.pw-btn:hover { background: var(--neutral-800); }
+.pw-btn:active { transform: scale(0.98); }
+
 /* Footer note */
 .footer-note {
   max-width: 1320px;
@@ -1993,6 +2109,28 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
 </style>
 </head>
 <body>
+
+<!-- Password gate -->
+<div class="pw-gate" id="pwGate">
+  <div class="pw-box">
+    <div class="pw-logo">
+      <div class="roundel"></div>
+      <div class="wordmark">Bring <span>/ Posten</span></div>
+    </div>
+    <div>
+      <h2 class="pw-heading">Tilgangsbeskyttet</h2>
+      <p class="pw-desc">Tast inn passordet for å åpne kalkulatoren.</p>
+    </div>
+    <div class="pw-form">
+      <label for="pwInput">Passord</label>
+      <div class="pw-input-wrap">
+        <input class="pw-input" id="pwInput" type="password" autocomplete="current-password" placeholder="••••••" />
+      </div>
+      <div class="pw-error" id="pwError" hidden>Feil passord. Prøv igjen.</div>
+      <button class="pw-btn" id="pwSubmit" type="button">Logg inn</button>
+    </div>
+  </div>
+</div>
 
 <div class="brand-gradient"></div>
 
@@ -4405,6 +4543,43 @@ function wire() {
     if (e.target === $('offerModal')) closeOfferModal();
   });
 }
+
+/* ===========================================================
+ * Password gate
+ * =========================================================== */
+(function () {
+  const CORRECT = 'PBVPBV';
+  const KEY = 'pbv_auth';
+  const gate = document.getElementById('pwGate');
+  const input = document.getElementById('pwInput');
+  const error = document.getElementById('pwError');
+  const btn = document.getElementById('pwSubmit');
+
+  function unlock() {
+    sessionStorage.setItem(KEY, '1');
+    gate.hidden = true;
+  }
+
+  function attempt() {
+    if (input.value.toUpperCase() === CORRECT) {
+      input.classList.remove('invalid');
+      error.hidden = true;
+      unlock();
+    } else {
+      input.classList.add('invalid');
+      error.hidden = false;
+      input.select();
+    }
+  }
+
+  if (sessionStorage.getItem(KEY) === '1') {
+    gate.hidden = true;
+  } else {
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') attempt(); });
+    btn.addEventListener('click', attempt);
+    input.focus();
+  }
+})();
 
 /* ===========================================================
  * Init
