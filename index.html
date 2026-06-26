@@ -1994,6 +1994,53 @@ aside.results::-webkit-scrollbar-thumb { background: var(--neutral-300); border-
 </head>
 <body>
 
+<!-- =========================================================================
+ * Enkel passordsperre
+ * ========================================================================= -->
+<div id="pwGate" style="position:fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center; background:var(--neutral-100); font-family:var(--font-sans);">
+  <form id="pwForm" style="background:var(--neutral-0); padding:40px; border-radius:16px; box-shadow:0 10px 40px rgba(0,0,0,.12); width:340px; text-align:center;">
+    <h2 style="margin:0 0 8px; color:var(--headline); font-size:22px;">Priskalkulator</h2>
+    <p style="margin:0 0 24px; color:var(--neutral-600); font-size:14px;">Skriv inn passord for å få tilgang.</p>
+    <input id="pwInput" type="password" autocomplete="off" autofocus placeholder="Passord"
+      style="width:100%; padding:12px 14px; font-size:16px; border:1px solid var(--neutral-300); border-radius:10px; outline:none; font-family:var(--font-sans);">
+    <p id="pwError" style="display:none; margin:12px 0 0; color:var(--status-error); font-size:13px;">Feil passord. Prøv igjen.</p>
+    <button type="submit"
+      style="width:100%; margin-top:20px; padding:12px; font-size:16px; font-weight:600; color:#fff; background:var(--brand); border:none; border-radius:10px; cursor:pointer; font-family:var(--font-sans);">
+      Logg inn
+    </button>
+  </form>
+</div>
+<script>
+(function () {
+  var PASSWORD = "PBVPBV";
+  var KEY = "pbv_authed";
+  var gate = document.getElementById("pwGate");
+  var form = document.getElementById("pwForm");
+  var input = document.getElementById("pwInput");
+  var error = document.getElementById("pwError");
+
+  function unlock() {
+    gate.style.display = "none";
+  }
+
+  if (sessionStorage.getItem(KEY) === "1") {
+    unlock();
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (input.value === PASSWORD) {
+      sessionStorage.setItem(KEY, "1");
+      unlock();
+    } else {
+      error.style.display = "block";
+      input.value = "";
+      input.focus();
+    }
+  });
+})();
+</script>
+
 <div class="brand-gradient"></div>
 
 <header class="app-header">
